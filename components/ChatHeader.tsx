@@ -1,10 +1,9 @@
 "use client";
-import React from "react";
-import { Button } from "./ui/button";
+import { UserState } from "@/lib/store/user";
 import { supabaseBrowserClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import ChatPresence from "./ChatPresence";
-import { UserState } from "@/lib/store/user";
+import { Button } from "./ui/button";
 
 export default function ChatHeader({ user }: { user: UserState["user"] }) {
   const router = useRouter();

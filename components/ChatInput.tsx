@@ -9,6 +9,7 @@ import { Imessage, useMessage } from "@/lib/store/messages";
 
 export default function ChatInput() {
   const user = useUser((state) => state.user);
+  const userColor = useMessage((state) => state.color);
   const addMessage = useMessage((state) => state.addMessage);
   const setOptimisticIds = useMessage((state) => state.setOptimisticIds);
 
@@ -57,6 +58,9 @@ export default function ChatInput() {
             handleSendMessage(e.currentTarget.value);
             e.currentTarget.value = "";
           }
+        }}
+        style={{
+          border: `1px solid ${userColor[user?.id!]}`,
         }}
       />
     </div>

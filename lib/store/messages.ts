@@ -18,12 +18,15 @@ export type Imessage = {
 };
 
 export interface MessageState {
+  color: Record</* id */ string, /* color */ string>;
+
   hasMore: boolean;
   page: number;
   messages: Imessage[];
   actionMessage: Imessage | undefined;
   optimisticIds: string[];
   addMessage: (message: Imessage) => void;
+  setColor: (color: Record</* id */ string, /* color */ string>) => void;
   setActionMessage: (message: Imessage | undefined) => void;
   optimisticDeleteMessage: (messageId: string) => void;
   optimisticUpdateMessage: (message: Imessage) => void;
@@ -32,6 +35,7 @@ export interface MessageState {
 }
 
 export const useMessage = create<MessageState>()((set) => ({
+  color: {},
   hasMore: true,
   page: 1,
   messages: [],
@@ -50,6 +54,10 @@ export const useMessage = create<MessageState>()((set) => ({
   addMessage: (newMessages) =>
     set((state) => ({
       messages: [...state.messages, newMessages],
+    })),
+  setColor: (color) =>
+    set((state) => ({
+      color: { ...state.color, ...color },
     })),
   optimisticDeleteMessage: (messageId) =>
     set((state) => {

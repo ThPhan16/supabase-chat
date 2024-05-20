@@ -112,9 +112,15 @@ export default function ChatPresence() {
       </div>
 
       <div id={cursorId}>
-        {Object.values(newClients).map((el) => {
+        {Object.values(newClients).map((el, index) => {
           return (
-            <Cursor x={el.x} y={el.y} name={el.user_name} id={el.user_id} />
+            <Cursor
+              key={index}
+              x={el.x}
+              y={el.y}
+              name={el.user_name}
+              id={el.user_id}
+            />
           );
         })}
       </div>

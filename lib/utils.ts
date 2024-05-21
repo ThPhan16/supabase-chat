@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { TLeaderboardList } from "./types/leaderboard";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -37,3 +38,14 @@ export function stringToColor(str: string) {
     ("000000" + r.toString(16) + g.toString(16) + b.toString(16)).slice(-6)
   );
 }
+
+export const sortLeaderboardByPoint = (
+  a: TLeaderboardList,
+  b: TLeaderboardList
+) => {
+  if (a.point === b.point) {
+    return 0;
+  }
+
+  return a.point > b.point ? -1 : 1;
+};

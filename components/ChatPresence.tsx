@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import Cursor from "./Cursor";
 import { useMessage } from "@/lib/store/messages";
 import { stringToColor } from "@/lib/utils";
+import { EChannel } from "@/lib/types/event";
 
 type MousePos = {
   x: number;
@@ -46,7 +47,7 @@ export default function ChatPresence() {
 
   useEffect(() => {
     const supabase = supabaseBrowserClient();
-    const channel = supabase.channel("room1");
+    const channel = supabase.channel(EChannel.ROOM_PRESENCE);
     channel
       .on("presence", { event: "sync" }, () => {
         let userIds: string[] = [];
@@ -99,6 +100,10 @@ export default function ChatPresence() {
           });
         }
       });
+
+    return () => {
+      channel.unsubscribe();
+    };
   }, [user, JSON.stringify(mousePos)]);
 
   if (!user) {

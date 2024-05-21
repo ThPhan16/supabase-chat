@@ -7,6 +7,7 @@ import { supabaseBrowserClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { ArrowDown } from "lucide-react";
 import LoadMoreMessages from "./LoadMoreMessages";
+import { EChannel } from "@/lib/types/event";
 
 export default function ListMessages() {
   const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;
@@ -25,7 +26,7 @@ export default function ListMessages() {
 
   useEffect(() => {
     const channel = supabase
-      .channel("chat-room")
+      .channel(EChannel.CHAT_ROOM)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },

@@ -1,11 +1,12 @@
 "use client";
-import { UserState } from "@/lib/store/user";
+import { UserState, useUser } from "@/lib/store/user";
 import { supabaseBrowserClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import ChatPresence from "./ChatPresence";
 import { Button } from "./ui/button";
 
 export default function ChatHeader({ user }: { user: UserState["user"] }) {
+  const clearUser = useUser((state) => state.clearUser);
   const router = useRouter();
 
   const handleLoginWithGithub = () => {
@@ -21,6 +22,7 @@ export default function ChatHeader({ user }: { user: UserState["user"] }) {
   const handleLogout = async () => {
     const supabase = supabaseBrowserClient();
     await supabase.auth.signOut();
+    clearUser();
     router.refresh();
   };
 

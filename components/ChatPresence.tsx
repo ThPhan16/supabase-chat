@@ -62,11 +62,13 @@ export default function ChatPresence() {
 
           const currentUser: any = channelState[id][0];
 
-          // @ts-ignore
+          if (currentUser.user_id === user?.id) {
+            return;
+          }
+
           userIds.push(currentUser.user_id);
 
-          const unqUserIds = [...new Set(userIds)];
-          unqUserIds.forEach(() => {
+          userIds.forEach(() => {
             userOnline[currentUser.user_id] = {
               x: currentUser.x,
               y: currentUser.y,
@@ -84,8 +86,7 @@ export default function ChatPresence() {
         setColor(userColor);
 
         /// remove duplicate
-        const unqUserIds = [...new Set(userIds)];
-        setOnlineUsers(unqUserIds.length);
+        setOnlineUsers(userIds.length);
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {

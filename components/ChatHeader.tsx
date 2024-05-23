@@ -22,7 +22,7 @@ export default function ChatHeader({ user }: { user: UserState["user"] }) {
     if (currentTab && currentTab !== ETab.CHAT) {
       setTab(currentTab as ETab);
     }
-  }, [window.location.origin]);
+  }, []);
 
   const handleLoginWithGithub = () => {
     const supabase = supabaseBrowserClient();

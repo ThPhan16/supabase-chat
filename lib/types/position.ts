@@ -1,4 +1,4 @@
 export type MousePos = {
-  x: number;
-  y: number;
+  top: number;
+  left: number;
 };

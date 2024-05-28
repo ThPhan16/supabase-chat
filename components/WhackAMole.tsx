@@ -80,27 +80,8 @@ export default function WhackAMole() {
     setMoles(newMoles);
   }, []);
 
-  const handleOnDownHammer = async (event: MouseEvent<HTMLDivElement>) => {
-    setIsWhacked(true);
-
-    const element = document.getElementById(MOLE_HAMMER_AREA);
-    if (!element) {
-      return;
-    }
-
-    console.log("handleOnDownHammer");
-
-    const rect = element?.getBoundingClientRect();
-    const top = event.clientY - (rect?.top ?? 0);
-    const left = event.clientX - (rect?.left ?? 0);
-
-    // Calculate the maximum random positions to avoid the element overflowing the window
-    console.log({
-      top,
-      left,
-    });
-
-    console.log(moles);
+  const handleWhacedAMole = async (event: MouseEvent<HTMLDivElement>) => {
+    console.log("handleWhacedAMole");
 
     if (!user) {
       return;
@@ -116,9 +97,11 @@ export default function WhackAMole() {
     );
   };
 
-  const handleOnUpHammer = async (event: MouseEvent<HTMLDivElement>) => {
-    console.log("handleOnUpHammer");
+  const handleOnDownHammer = (event: MouseEvent<HTMLDivElement>) => {
+    setIsWhacked(true);
+  };
 
+  const handleOnUpHammer = (event: MouseEvent<HTMLDivElement>) => {
     setTimeout(() => {
       setIsWhacked(false);
     }, 10);
@@ -128,8 +111,8 @@ export default function WhackAMole() {
     const element = document.getElementById(MOLE_HAMMER_AREA);
 
     const rect = element?.getBoundingClientRect();
-    const top = event.clientY - (rect?.top ?? 0);
-    const left = event.clientX - (rect?.left ?? 0);
+    const top = event.pageY - (rect?.top ?? 0);
+    const left = event.pageX - (rect?.left ?? 0);
 
     setMousePos({ top, left });
   };
@@ -152,7 +135,11 @@ export default function WhackAMole() {
               <div key={index} className="whack-a-mole-hole">
                 {moles.map((mole, moleIx) => {
                   return mole.id === hole.id ? (
-                    <div key={moleIx} className="mole"></div>
+                    <div
+                      key={moleIx}
+                      className="mole"
+                      onClick={handleWhacedAMole}
+                    ></div>
                   ) : null;
                 })}
               </div>
@@ -165,7 +152,6 @@ export default function WhackAMole() {
           onMouseDown={handleOnDownHammer}
           // onMouseUp={handleOnUpHammer}
           onMouseOut={handleOnUpHammer}
-          // onClick={handleClick}
           style={{
             top: mousePos?.top,
             left: mousePos?.left,

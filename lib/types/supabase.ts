@@ -9,6 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      game_events: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          game_id: string | null
+          id: string
+          player_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          game_id?: string | null
+          id?: string
+          player_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          game_id?: string | null
+          id?: string
+          player_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_events_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_events_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      games: {
+        Row: {
+          created_at: string | null
+          ended_at: string | null
+          id: string
+          started_at: string | null
+          state: string
+        }
+        Insert: {
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          started_at?: string | null
+          state: string
+        }
+        Update: {
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          started_at?: string | null
+          state?: string
+        }
+        Relationships: []
+      }
       leaderboards: {
         Row: {
           created_at: string
@@ -69,6 +135,70 @@ export type Database = {
             columns: ["send_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moles: {
+        Row: {
+          changed_at: string | null
+          game_id: string | null
+          id: string
+          position: number
+          state: string
+        }
+        Insert: {
+          changed_at?: string | null
+          game_id?: string | null
+          id?: string
+          position: number
+          state: string
+        }
+        Update: {
+          changed_at?: string | null
+          game_id?: string | null
+          id?: string
+          position?: number
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moles_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      players: {
+        Row: {
+          display_name: string
+          game_id: string | null
+          id: string
+          joined_at: string | null
+          score: number | null
+        }
+        Insert: {
+          display_name: string
+          game_id?: string | null
+          id?: string
+          joined_at?: string | null
+          score?: number | null
+        }
+        Update: {
+          display_name?: string
+          game_id?: string | null
+          id?: string
+          joined_at?: string | null
+          score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
             referencedColumns: ["id"]
           },
         ]

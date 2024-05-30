@@ -1,13 +1,11 @@
-'use client';
-import { useUser } from '@/lib/store/user';
-import { MousePos } from '@/lib/types/position';
-import { supabaseBrowserClient } from '@/utils/supabase/client';
-import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import LeaderBoard from './LeaderBoard';
-import { url } from 'inspector';
+"use client";
+import { useUser } from "@/lib/store/user";
+import { supabaseBrowserClient } from "@/utils/supabase/client";
+import { useEffect, useRef, useState } from "react";
+import LeaderBoard from "./LeaderBoard";
+import { EChannel } from "@/lib/types/event";
 
-const MOLE_HAMMER_AREA = 'mole-hammer-area';
+const MOLE_HAMMER_AREA = "mole-hammer-area";
 
 export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
@@ -21,43 +19,57 @@ export default function WhackAMole() {
   const [moles, setMoles] = useState<boolean[]>(holesData);
 
   useEffect(() => {
-    // Get the window width and height
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-
     const element = document.getElementById(MOLE_HAMMER_AREA);
     if (!element) {
       return;
     }
 
-    // Get the element's width and height (assuming it's already loaded)
-    const elementWidth = element.offsetWidth;
-    const elementHeight = element.offsetHeight;
     const onMouseDown = () => {
-      element.classList.add('hammer-hit');
+      element.classList.add("hammer-hit");
     };
+
     const onMouseUp = () => {
-      element.classList.remove('hammer-hit');
+      element.classList.remove("hammer-hit");
     };
 
-    element.addEventListener('mousedown', onMouseDown);
+    element.addEventListener("mousedown", onMouseDown);
 
-    element.addEventListener('mouseup', onMouseUp);
-
-    // Calculate the maximum random positions to avoid the element overflowing the window
-    const maxTop = windowHeight - elementHeight;
-    const maxLeft = windowWidth - elementWidth;
-
-    const interval = setInterval(() => {
-      const newMoles = moles.map(() => Math.random() < 0.3);
-      console.log(newMoles);
-      setMoles(newMoles);
-    }, 2000);
+    element.addEventListener("mouseup", onMouseUp);
 
     return () => {
-      element.removeEventListener('mousedown', onMouseDown);
-      element.removeEventListener('mouseup', onMouseUp);
+      element.removeEventListener("mousedown", onMouseDown);
+      element.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const channel = supabase.channel(EChannel.LEADERBOARD);
+
+      channel
+        .on("presence", { event: "sync" }, () => {
+          const channelState = channel.presenceState<{ newMoles: boolean[] }>();
+
+          const newMoles = Object.values(channelState)[0]?.[0]?.newMoles;
+
+          if (newMoles.length) {
+            setMoles(newMoles);
+          }
+        })
+        .subscribe(async (status) => {
+          if (status === "SUBSCRIBED") {
+            const newMoles = moles.map(() => Math.random() < 0.3);
+
+            await channel.track({
+              newMoles,
+            });
+          }
+        });
+    }, 3000);
+
+    return () => {
       clearInterval(interval);
+      // channel.unsubscribe();
     };
   }, []);
 
@@ -70,8 +82,8 @@ export default function WhackAMole() {
 
     const hole = holeRefs.current[index];
     // hole?.classList.add('whacked');
-    const explotion = document.createElement('div');
-    explotion.classList.add('whacked');
+    const explotion = document.createElement("div");
+    explotion.classList.add("whacked");
     hole?.appendChild(explotion);
 
     setTimeout(() => {
@@ -79,24 +91,29 @@ export default function WhackAMole() {
       hole?.removeChild(explotion);
     }, 300);
 
-    await supabase.from('leaderboards').upsert(
+    await supabase.from("moles").upsert({
+      state: "hide",
+      position: 1,
+    });
+
+    await supabase.from("leaderboards").upsert(
       {
         user_id: user.id,
         point: ++point.current,
         created_at: new Date().toISOString(),
       },
-      { onConflict: 'user_id' }
+      { onConflict: "user_id" }
     );
   };
 
   return (
-    <div className='flex items-center justify-between gap-6 w-full h-full'>
+    <div className="flex items-center justify-between gap-6 w-full h-full">
       <div
         id={MOLE_HAMMER_AREA}
-        style={{ backgroundColor: '#000' }}
-        className='w-full h-full'
+        style={{ backgroundColor: "#000" }}
+        className="w-full h-full"
       >
-        <div className='border-2 rounded-md h-full p-4 whack-a-mole-board'>
+        <div className="border-2 rounded-md h-full p-4 whack-a-mole-board">
           {holesData.map((hole, index) => {
             return (
               <div
@@ -106,15 +123,15 @@ export default function WhackAMole() {
                 }}
                 className={`whack-a-mole-hole`}
                 onClick={
-                  moles[index]
+                  moles?.[index]
                     ? () => {
                         handleWhacedAMole(index);
                       }
                     : undefined
                 }
-                style={{ overflow: 'hidden' }}
+                style={{ overflow: "hidden" }}
               >
-                {moles[index] ? <div className='mole'></div> : null}
+                {moles?.[index] ? <div className="mole"></div> : null}
               </div>
             );
           })}

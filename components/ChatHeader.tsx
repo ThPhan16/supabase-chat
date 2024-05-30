@@ -44,7 +44,7 @@ export default function ChatHeader({ user }: { user: UserState["user"] }) {
   const handleSelectTab = (tab: ETab) => () => {
     setTab(tab);
 
-    window.location.replace(`${window.location.origin}#${tab}`);
+    window.location.replace(`${window.location.origin}/${tab}`);
   };
 
   return (

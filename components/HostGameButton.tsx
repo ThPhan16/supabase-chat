@@ -1,18 +1,24 @@
 // components/HostGameButton.tsx
-'use client';
-import { usePalyerId } from '@/lib/store/user';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+"use client";
+import { usePalyerId } from "@/lib/store/user";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const HostGameButton: React.FC = () => {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState('');
+  const [displayName, setDisplayName] = useState("");
 
   const hostGame = async () => {
-    const response = await fetch('/api/createGame', {
-      method: 'POST',
+    if (!displayName) {
+      toast("Please enter name");
+      return;
+    }
+
+    const response = await fetch("/api/createGame", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ displayName }),
     });
@@ -33,10 +39,10 @@ const HostGameButton: React.FC = () => {
   return (
     <div>
       <input
-        type='text'
+        type="text"
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
-        placeholder='Enter your display name'
+        placeholder="Enter your display name"
       />
       <button onClick={hostGame}>Host Game</button>
     </div>

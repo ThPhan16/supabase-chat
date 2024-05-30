@@ -1,19 +1,30 @@
 // components/JoinGameForm.tsx
-'use client';
-import { usePalyerId } from '@/lib/store/user';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+"use client";
+import { usePalyerId } from "@/lib/store/user";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const JoinGameForm: React.FC = () => {
   const router = useRouter();
-  const [roomId, setRoomId] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [roomId, setRoomId] = useState("");
+  const [displayName, setDisplayName] = useState("");
 
   const joinGame = async () => {
-    const response = await fetch('/api/joinGame', {
-      method: 'POST',
+    if (!roomId) {
+      toast("Please enter romm ID");
+      return;
+    }
+
+    if (!displayName) {
+      toast("Please enter name");
+      return;
+    }
+
+    const response = await fetch("/api/joinGame", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ roomId, displayName }),
     });
@@ -32,16 +43,16 @@ const JoinGameForm: React.FC = () => {
   return (
     <div>
       <input
-        type='text'
+        type="text"
         value={roomId}
         onChange={(e) => setRoomId(e.target.value)}
-        placeholder='Enter room ID'
+        placeholder="Enter room ID"
       />
       <input
-        type='text'
+        type="text"
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
-        placeholder='Enter your display name'
+        placeholder="Enter your display name"
       />
       <button onClick={joinGame}>Join Game</button>
     </div>

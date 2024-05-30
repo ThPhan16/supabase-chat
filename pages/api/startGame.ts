@@ -1,6 +1,7 @@
 // pages/api/startGame.ts
-import { supabaseBrowserClient } from '@/utils/supabase/client';
-import type { NextApiRequest, NextApiResponse } from 'next';
+
+import { supabaseBrowserClient } from "@/utils/supabase/client";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
   success?: boolean;
@@ -12,13 +13,13 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const supabase = supabaseBrowserClient();
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const { gameId } = req.body;
 
     const { error } = await supabase
-      .from('games')
-      .update({ state: 'in_progress' })
-      .eq('id', gameId);
+      .from("games")
+      .update({ state: "in_progress" })
+      .eq("id", gameId);
 
     if (error) {
       res.status(500).json({ error: error.message });
@@ -27,7 +28,7 @@ export default async function handler(
 
     res.status(200).json({ success: true });
   } else {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader("Allow", ["POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

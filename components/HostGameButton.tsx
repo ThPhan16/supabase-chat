@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 const HostGameButton: React.FC = () => {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState("host");
 
   const hostGame = async () => {
     if (!displayName) {

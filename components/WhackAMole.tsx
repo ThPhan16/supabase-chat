@@ -1,20 +1,20 @@
-'use client';
-import { usePalyerId, useUser } from '@/lib/store/user';
-import { supabaseBrowserClient } from '@/utils/supabase/client';
-import { useEffect, useRef, useState } from 'react';
-import LeaderBoard from './LeaderBoard';
-import { EChannel } from '@/lib/types/event';
-import { useParams } from 'next/navigation';
-import { Database } from '@/lib/types/supabase';
+"use client";
+import { usePalyerId, useUser } from "@/lib/store/user";
+import { supabaseBrowserClient } from "@/utils/supabase/client";
+import { useEffect, useRef, useState } from "react";
+import LeaderBoard from "./LeaderBoard";
+import { EChannel } from "@/lib/types/event";
+import { useParams } from "next/navigation";
+import { Database } from "@/lib/types/supabase";
 
-const MOLE_HAMMER_AREA = 'mole-hammer-area';
+const MOLE_HAMMER_AREA = "mole-hammer-area";
 
 export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
 
   const playerId = usePalyerId((s) => s.state.playerId);
   const point = useRef(0);
-  const holesData = Array(42).fill(false);
+  const holesData = Array(1).fill(false);
 
   const holeRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -22,8 +22,10 @@ export default function WhackAMole() {
 
   const param = useParams<{ gameId: string }>();
 
+  const [index, setIndex] = useState<number | null>(null);
+
   const [host, setHost] =
-    useState<Database['public']['Tables']['players']['Row']>();
+    useState<Database["public"]["Tables"]["players"]["Row"]>();
 
   const getPlayers = async () => {
     if (!param?.gameId) {
@@ -31,17 +33,15 @@ export default function WhackAMole() {
     }
 
     return await supabase
-      .from('players')
-      .select('*')
-      .eq('game_id', param.gameId);
+      .from("players")
+      .select("*")
+      .eq("game_id", param.gameId);
   };
 
   useEffect(() => {
     getPlayers().then((res) => {
       if (res?.data) {
         const hostGame = res.data.find((el) => el.is_host);
-
-        console.log('hostGame', hostGame);
 
         if (hostGame) {
           setHost(host);
@@ -57,20 +57,20 @@ export default function WhackAMole() {
     }
 
     const onMouseDown = () => {
-      element.classList.add('hammer-hit');
+      element.classList.add("hammer-hit");
     };
 
     const onMouseUp = () => {
-      element.classList.remove('hammer-hit');
+      element.classList.remove("hammer-hit");
     };
 
-    element.addEventListener('mousedown', onMouseDown);
+    element.addEventListener("mousedown", onMouseDown);
 
-    element.addEventListener('mouseup', onMouseUp);
+    element.addEventListener("mouseup", onMouseUp);
 
     return () => {
-      element.removeEventListener('mousedown', onMouseDown);
-      element.removeEventListener('mouseup', onMouseUp);
+      element.removeEventListener("mousedown", onMouseDown);
+      element.removeEventListener("mouseup", onMouseUp);
     };
   }, []);
 
@@ -78,12 +78,12 @@ export default function WhackAMole() {
     const channel = supabase.channel(EChannel.HAMMER_PRESENCE);
 
     channel
-      .on('presence', { event: 'sync' }, () => {
+      .on("presence", { event: "sync" }, () => {
         if (host?.id) {
           return;
         }
 
-        console.log('player');
+        console.log("player");
 
         const channelState = channel.presenceState<{ newMoles: boolean[] }>();
 
@@ -94,15 +94,17 @@ export default function WhackAMole() {
         }
       })
       .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('host');
-          const newMoles = moles.map(() => Math.random() < 0.3);
+        if (status === "SUBSCRIBED") {
+          console.log("host");
+          const newMoles = moles.map(() => 0.2 < 0.3);
 
           await channel.track({
             newMoles,
           });
         }
       });
+
+    return channel;
   };
 
   useEffect(() => {
@@ -110,56 +112,128 @@ export default function WhackAMole() {
     // handlePresenceChanges();
 
     // Subscribe using setInterval for repeated calls every 2 seconds
-    const interval = setInterval(() => {
-      handlePresenceChanges();
-    }, 2000);
+    // const interval = setInterval(() => {
+    const channel = handlePresenceChanges();
+    // }, 2000);
 
     return () => {
-      clearInterval(interval);
-      // channel.unsubscribe();
+      // clearInterval(interval);
+      channel.unsubscribe();
     };
   }, []);
 
-  const handleWhacedAMole = async (index: number) => {
-    if (!playerId) {
+  useEffect(() => {
+    if (index === null || index === undefined) {
       return;
     }
 
-    setMoles(moles.map((mole, i) => (i === index ? false : mole)));
+    const channel = supabase.channel(EChannel.WHACKED_PRESENCE);
+
+    channel
+      .on("presence", { event: "sync" }, () => {
+        /*   if (host?.id) {
+          return;
+        } */
+
+        console.log("player listen");
+
+        const channelState = channel.presenceState<{ newMoles: boolean[] }>();
+
+        const newMoles = Object.values(channelState)[0]?.[0]?.newMoles;
+
+        console.log("newMoles", newMoles);
+
+        if (newMoles?.length) {
+          setMoles(newMoles);
+        }
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED" /* && !host?.id */) {
+          console.log("player emit");
+          const newMoles = [...moles].map((mole, i) =>
+            i === index ? false : mole
+          );
+
+          console.log("newMoles", newMoles);
+
+          await channel.track({
+            newMoles,
+          });
+        }
+      });
+  }, [index]);
+
+  const handleWhacedAMole = async (index: number) => {
+    // if (!playerId) {
+    //   return;
+    // }
+
+    // const channel = supabase.channel(EChannel.WHACKED_PRESENCE);
+
+    // channel
+    //   .on("presence", { event: "sync" }, () => {
+    //     /*   if (host?.id) {
+    //       return;
+    //     } */
+
+    //     console.log("player listen");
+
+    //     const channelState = channel.presenceState<{ newMoles: boolean[] }>();
+
+    //     const newMoles = Object.values(channelState)[0]?.[0]?.newMoles;
+
+    //     console.log("newMoles", newMoles);
+
+    //     if (newMoles?.length) {
+    //       setMoles(newMoles);
+    //     }
+    //   })
+    //   .subscribe(async (status) => {
+    //     if (status === "SUBSCRIBED" /* && !host?.id */) {
+    //       console.log("player emit");
+    //       const newMoles = [...moles].map((mole, i) =>
+    //         i === index ? false : mole
+    //       );
+
+    //       console.log("newMoles", newMoles);
+
+    //       await channel.track({
+    //         newMoles,
+    //       });
+    //     }
+    //   });
+
+    setIndex(index);
 
     const hole = holeRefs.current[index];
-    // hole?.classList.add('whacked');
-    const explotion = document.createElement('div');
-    explotion.classList.add('whacked');
+    const explotion = document.createElement("div");
+    explotion.classList.add("whacked");
     hole?.appendChild(explotion);
 
     setTimeout(() => {
-      // hole?.classList.remove('whacked');
       hole?.removeChild(explotion);
     }, 300);
 
-    await supabase.from('moles').upsert({
-      state: 'hide',
-      position: 1,
-    });
+    // setMoles(moles.map((mole, i) => (i === index ? false : mole)));
 
+    /// update player score
     await supabase
-      .from('players')
+      .from("players")
       .update({
         score: ++point.current,
       })
-      .eq('id', playerId || '')
+      .eq("id", playerId || "")
       .select();
   };
 
   return (
-    <div className='flex items-center justify-between gap-6 w-full h-full'>
+    <div className="flex items-center justify-between gap-6 w-full h-full">
       <div
         id={MOLE_HAMMER_AREA}
-        style={{ backgroundColor: '#000' }}
-        className='w-full h-full'
+        style={{ backgroundColor: "#000" }}
+        className="w-full h-full"
       >
-        <div className='border-2 rounded-md h-full p-4 whack-a-mole-board'>
+        <div className="border-2 rounded-md h-full p-4 whack-a-mole-board">
           {holesData.map((hole, index) => {
             return (
               <div
@@ -175,9 +249,9 @@ export default function WhackAMole() {
                       }
                     : undefined
                 }
-                style={{ overflow: 'hidden' }}
+                style={{ overflow: "hidden" }}
               >
-                {moles?.[index] ? <div className='mole'></div> : null}
+                {moles?.[index] ? <div className="mole"></div> : null}
               </div>
             );
           })}

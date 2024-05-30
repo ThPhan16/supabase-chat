@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabaseBrowserClient } from '@/utils/supabase/client';
 import UserList from '@/components/lobby/UserList';
 import JoinGameForm from '@/components/lobby/JoinGameForm';
+import WhackAMole from '@/components/WhackAMole';
 
 interface PageProps {
   params: {
@@ -17,8 +18,7 @@ const page = async ({ params }: PageProps) => {
 
   return (
     <div>
-      <h1>Lobby</h1>
-      <UserList gameId={gameId} />
+      <WhackAMole />
     </div>
   );
 };

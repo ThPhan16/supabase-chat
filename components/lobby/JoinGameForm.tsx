@@ -1,5 +1,6 @@
 // components/JoinGameForm.tsx
 'use client';
+import { usePalyerId } from '@/lib/store/user';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -21,6 +22,7 @@ const JoinGameForm: React.FC = () => {
 
     if (data.success && data.playerId) {
       router.push(`/lobby/${roomId}`);
+      usePalyerId.getState().setState(data.playerId);
     } else {
       console.error(data.error);
       // Handle error (e.g., show a notification)

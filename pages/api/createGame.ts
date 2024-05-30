@@ -4,6 +4,7 @@ import { supabaseBrowserClient } from '@/utils/supabase/client';
 
 type Data = {
   gameId?: string;
+  hostId?: string;
   error?: string;
 };
 
@@ -30,7 +31,7 @@ export default async function handler(
     // Add the host player to the game
     const { data: player, error: playerError } = await supabase
       .from('players')
-      .insert([{ game_id: game.id, display_name: displayName }])
+      .insert([{ game_id: game.id, display_name: displayName, is_host: true }])
       .select()
       .single();
 
@@ -39,7 +40,7 @@ export default async function handler(
       return;
     }
 
-    res.status(200).json({ gameId: game.id });
+    res.status(200).json({ gameId: game.id, hostId: player.id });
   } else {
     res.setHeader('Allow', ['POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);

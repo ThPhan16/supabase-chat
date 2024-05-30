@@ -2,6 +2,8 @@
 'use client';
 import { FC, useEffect, useState } from 'react';
 import { supabaseBrowserClient } from '@/utils/supabase/client';
+import { usePalyerId } from '@/lib/store/user';
+import { useRouter } from 'next/navigation';
 
 interface PageProps {
   gameId?: string;
@@ -9,8 +11,35 @@ interface PageProps {
 
 const UserList: FC<PageProps> = ({ gameId }) => {
   const supabase = supabaseBrowserClient();
+  const playerId = usePalyerId((s) => s.state.playerId);
+  console.log(playerId);
   const [players, setPlayers] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const isHost = players.some(
+    (player) => player.id === playerId && player.is_host
+  );
+  const router = useRouter();
+
+  const startGame = async () => {
+    try {
+      const response = await fetch('/api/startGame', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ gameId }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        console.error(data.error);
+        // Handle error (e.g., show a notification)
+      }
+    } catch (err) {
+      console.error('An error occurred while starting the game:', err);
+    }
+  };
 
   useEffect(() => {
     if (!gameId) return;
@@ -44,8 +73,28 @@ const UserList: FC<PageProps> = ({ gameId }) => {
       )
       .subscribe();
 
+    const gameChannel = supabase
+      .channel('custom-filter-channel')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'games',
+          filter: `id=eq.${gameId}`,
+        },
+        (payload) => {
+          console.log('Change received!', payload);
+          if (payload.new.state === 'in_progress') {
+            router.push(`/game/${gameId}`);
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(channels);
+      supabase.removeChannel(gameChannel);
     };
   }, []);
 
@@ -54,11 +103,17 @@ const UserList: FC<PageProps> = ({ gameId }) => {
   }
 
   return (
-    <ul>
-      {players.map((player) => (
-        <li key={player.id}>{player.display_name}</li>
-      ))}
-    </ul>
+    <>
+      <ul>
+        {players.map((player) => (
+          <li key={player.id}>
+            {player.display_name} {player.id === playerId ? '(You)' : ''}
+          </li>
+        ))}
+      </ul>
+
+      {isHost ? <button onClick={startGame}>Start Game</button> : null}
+    </>
   );
 };
 

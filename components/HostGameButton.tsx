@@ -1,5 +1,6 @@
 // components/HostGameButton.tsx
 'use client';
+import { usePalyerId } from '@/lib/store/user';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -20,6 +21,9 @@ const HostGameButton: React.FC = () => {
 
     if (data.gameId) {
       router.push(`/lobby/${data.gameId}`);
+      if (data.hostId) {
+        usePalyerId.getState().setState(data.hostId);
+      }
     } else {
       console.error(data.error);
       // Handle error (e.g., show a notification)

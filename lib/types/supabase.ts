@@ -176,6 +176,7 @@ export type Database = {
           display_name: string
           game_id: string | null
           id: string
+          is_host: boolean | null
           joined_at: string | null
           score: number | null
         }
@@ -183,6 +184,7 @@ export type Database = {
           display_name: string
           game_id?: string | null
           id?: string
+          is_host?: boolean | null
           joined_at?: string | null
           score?: number | null
         }
@@ -190,6 +192,7 @@ export type Database = {
           display_name?: string
           game_id?: string | null
           id?: string
+          is_host?: boolean | null
           joined_at?: string | null
           score?: number | null
         }
@@ -240,7 +243,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_moles_cron_job: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      generate_moles: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

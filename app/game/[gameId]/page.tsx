@@ -1,4 +1,3 @@
-'use client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabaseBrowserClient } from '@/utils/supabase/client';
@@ -13,7 +12,6 @@ interface PageProps {
 }
 
 const page = async ({ params }: PageProps) => {
-  const router = useRouter();
   const { gameId } = params;
 
   return (

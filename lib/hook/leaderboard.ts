@@ -1,18 +1,19 @@
-import { useState } from "react";
-import { TLeaderboardList } from "../types/leaderboard";
-import { toast } from "sonner";
-import { supabaseBrowserClient } from "@/utils/supabase/client";
+import { useState } from 'react';
+import { TLeaderboardList } from '../types/leaderboard';
+import { toast } from 'sonner';
+import { supabaseBrowserClient } from '@/utils/supabase/client';
 
-export const useLeaderboard = () => {
+export const useLeaderboard = (gameId?: string) => {
   const supabase = supabaseBrowserClient();
 
   const [data, setData] = useState<TLeaderboardList[]>([]);
 
   const fetchLeaderboardData = async () => {
     const { data, error } = await supabase
-      .from("leaderboards")
-      .select("*,profiles(id,display_name,avatar_url)")
-      .order("point", { ascending: false });
+      .from('players')
+      .select('id,display_name')
+      .eq('game_id', gameId || '')
+      .order('score', { ascending: false });
 
     if (error) {
       toast.error(error.message);

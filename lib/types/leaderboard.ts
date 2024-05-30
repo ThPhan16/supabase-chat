@@ -1,6 +1,3 @@
-import { Database } from "./supabase";
+import { Database } from './supabase';
 
-export type TLeaderboardList =
-  Database["public"]["Tables"]["leaderboards"]["Row"] & {
-    profiles: Database["public"]["Tables"]["profiles"]["Row"];
-  };
+export type TLeaderboardList = Database['public']['Tables']['players']['Row'];

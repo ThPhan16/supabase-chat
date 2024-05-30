@@ -1,6 +1,6 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { TLeaderboardList } from "./types/leaderboard";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { TLeaderboardList } from './types/leaderboard';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,7 +18,7 @@ export function getFromAndTo(page: number, itemPerPage: number) {
 
 export function stringToColor(str: string) {
   if (!str) {
-    return "#000000";
+    return '#000000';
   }
 
   let hash = 0;
@@ -34,8 +34,8 @@ export function stringToColor(str: string) {
 
   // Return the color as a hex string
   return (
-    "#" +
-    ("000000" + r.toString(16) + g.toString(16) + b.toString(16)).slice(-6)
+    '#' +
+    ('000000' + r.toString(16) + g.toString(16) + b.toString(16)).slice(-6)
   );
 }
 
@@ -43,9 +43,9 @@ export const sortLeaderboardByPoint = (
   a: TLeaderboardList,
   b: TLeaderboardList
 ) => {
-  if (a.point === b.point) {
+  if (a.score === b.score) {
     return 0;
   }
 
-  return a.point > b.point ? -1 : 1;
+  return (a.score || 0) > (b.score || 0) ? -1 : 1;
 };

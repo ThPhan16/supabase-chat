@@ -14,7 +14,7 @@ export default function ChatHeader({ user }: { user: UserState['user'] }) {
 
   useEffect(() => {
     setTab(ETab.GAME);
-    window.location.replace(`${window.location.origin}/${tab}`);
+    window.location.replace(`${window.location.origin}/game`);
   }, []);
 
   const handleLoginWithGithub = () => {
@@ -37,7 +37,7 @@ export default function ChatHeader({ user }: { user: UserState['user'] }) {
   const handleSelectTab = (tab: ETab) => () => {
     setTab(tab);
 
-    window.location.replace(`${window.location.origin}/${tab}`);
+    window.location.replace(`${window.location.origin}/game`);
   };
 
   return (

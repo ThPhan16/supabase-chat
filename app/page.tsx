@@ -1,19 +1,9 @@
-import ChatHeader from "@/components/ChatHeader";
-import Main from "@/components/Main";
-import InitUser from "@/lib/store/InitUser";
-import { supabaseServerClient } from "@/utils/supabase/server";
+import Main from "./game/Main";
 
-const Page = async () => {
-  const supabase = supabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
-
+const Page = () => {
   return (
     <div className="h-screen">
-      <ChatHeader user={data?.user} />
-
-      <Main user={data?.user} />
-
-      <InitUser user={data?.user} />
+      <Main />
     </div>
   );
 };

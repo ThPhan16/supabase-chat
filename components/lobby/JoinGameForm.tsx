@@ -1,6 +1,7 @@
 // components/JoinGameForm.tsx
 "use client";
 import { usePalyerId } from "@/lib/store/user";
+import { resolveObjectURL } from "buffer";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,12 +13,12 @@ const JoinGameForm: React.FC = () => {
 
   const joinGame = async () => {
     if (!roomId) {
-      toast("Please enter romm ID");
+      toast.error("Please enter room ID");
       return;
     }
 
     if (!displayName) {
-      toast("Please enter name");
+      toast.error("Please enter name");
       return;
     }
 
@@ -28,6 +29,11 @@ const JoinGameForm: React.FC = () => {
       },
       body: JSON.stringify({ roomId, displayName }),
     });
+
+    if (response.status === 403) {
+      toast.error("Too late, game started");
+      return;
+    }
 
     const data = await response.json();
 

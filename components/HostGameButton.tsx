@@ -11,7 +11,7 @@ const HostGameButton: React.FC = () => {
 
   const hostGame = async () => {
     if (!displayName) {
-      toast("Please enter name");
+      toast.error("Please enter name");
       return;
     }
 

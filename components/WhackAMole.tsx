@@ -1,20 +1,20 @@
-'use client';
-import { usePalyerId, useUser } from '@/lib/store/user';
-import { supabaseBrowserClient } from '@/utils/supabase/client';
-import { useEffect, useRef, useState } from 'react';
-import LeaderBoard from './LeaderBoard';
-import { EChannel } from '@/lib/types/event';
-import { useParams } from 'next/navigation';
-import { Database } from '@/lib/types/supabase';
-import { channel } from 'diagnostics_channel';
+"use client";
+import { usePalyerId } from "@/lib/store/user";
+import { supabaseBrowserClient } from "@/utils/supabase/client";
+import { useParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import LeaderBoard from "./LeaderBoard";
 
-const MOLE_HAMMER_AREA = 'mole-hammer-area';
+const MOLE_HAMMER_AREA = "mole-hammer-area";
+const UN_WHACKED_MOLE_POINT = 4;
 
 export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
 
   const playerId = usePalyerId((s) => s.state.playerId);
-  const point = useRef(0);
+  const whackedPoint = useRef(0);
+  const unWhackedPoint = useRef(0);
   const holesData = Array(42).fill(false);
 
   const holeRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -30,20 +30,20 @@ export default function WhackAMole() {
     }
 
     const onMouseDown = () => {
-      element.classList.add('hammer-hit');
+      element.classList.add("hammer-hit");
     };
 
     const onMouseUp = () => {
-      element.classList.remove('hammer-hit');
+      element.classList.remove("hammer-hit");
     };
 
-    element.addEventListener('mousedown', onMouseDown);
+    element.addEventListener("mousedown", onMouseDown);
 
-    element.addEventListener('mouseup', onMouseUp);
+    element.addEventListener("mouseup", onMouseUp);
 
     return () => {
-      element.removeEventListener('mousedown', onMouseDown);
-      element.removeEventListener('mouseup', onMouseUp);
+      element.removeEventListener("mousedown", onMouseDown);
+      element.removeEventListener("mouseup", onMouseUp);
     };
   }, []);
 
@@ -52,9 +52,9 @@ export default function WhackAMole() {
 
     const getHost = async () => {
       const { data, error } = await supabase
-        .from('players')
-        .select('*')
-        .eq('game_id', param.gameId);
+        .from("players")
+        .select("*")
+        .eq("game_id", param.gameId);
 
       if (error) {
         console.error(error);
@@ -67,13 +67,13 @@ export default function WhackAMole() {
       const channel = supabase.channel(param.gameId);
 
       channel
-        .on('broadcast', { event: 'mole-pos' }, (payload) => {
+        .on("broadcast", { event: "mole-pos" }, (payload) => {
           if (payload.payload) {
             setMoles(payload.payload);
           }
         })
         .subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
+          if (status === "SUBSCRIBED") {
             if (hostGame?.id !== playerId) {
               return;
             }
@@ -83,8 +83,8 @@ export default function WhackAMole() {
               setMoles(newMoles);
 
               channel.send({
-                type: 'broadcast',
-                event: 'mole-pos',
+                type: "broadcast",
+                event: "mole-pos",
                 payload: newMoles,
               });
             }, 2000);
@@ -101,8 +101,8 @@ export default function WhackAMole() {
     setMoles((prev) => prev.map((el, idx) => (idx == indx ? false : el)));
 
     const hole = holeRefs.current[indx];
-    const explotion = document.createElement('div');
-    explotion.classList.add('whacked');
+    const explotion = document.createElement("div");
+    explotion.classList.add("whacked");
     hole?.appendChild(explotion);
 
     setTimeout(() => {
@@ -110,7 +110,7 @@ export default function WhackAMole() {
     }, 300);
   };
 
-  const handleWhacedAMole = async (index: number) => {
+  const handleWhackedAMole = async (index: number) => {
     if (!playerId) {
       return;
     }
@@ -118,39 +118,60 @@ export default function WhackAMole() {
     const channel = supabase.channel(`whack-mole-${param?.gameId}`);
 
     channel
-      .on('broadcast', { event: 'hit-mole' }, (payload) => {
+      .on("broadcast", { event: "hit-mole" }, (payload) => {
         if (payload.payload) {
           setExplode(payload.payload);
         }
       })
       .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
+        if (status === "SUBSCRIBED") {
           setExplode(index);
           await channel.send({
-            type: 'broadcast',
-            event: 'hit-mole',
+            type: "broadcast",
+            event: "hit-mole",
             payload: index,
           });
         }
       });
 
     await supabase
-      .from('players')
+      .from("players")
       .update({
-        score: ++point.current,
+        score: ++whackedPoint.current,
       })
-      .eq('id', playerId || '')
-      .select();
+      .eq("id", playerId);
+  };
+
+  const handleUnWhackedAMole = async (index: number) => {
+    if (!playerId) {
+      return;
+    }
+
+    ++unWhackedPoint.current;
+    if (unWhackedPoint.current <= UN_WHACKED_MOLE_POINT) {
+      return;
+    }
+
+    toast.warning(`You didn't strike the mole ${UN_WHACKED_MOLE_POINT} times.`);
+
+    await supabase
+      .from("players")
+      .update({
+        score: whackedPoint.current > 0 ? --whackedPoint.current : 0,
+      })
+      .eq("id", playerId);
+
+    unWhackedPoint.current = 0;
   };
 
   return (
-    <div className='flex items-center justify-between gap-6 w-full h-full'>
+    <div className="flex items-center justify-between gap-6 w-full h-full">
       <div
         id={MOLE_HAMMER_AREA}
-        style={{ backgroundColor: '#000' }}
-        className='w-full h-full'
+        style={{ backgroundColor: "#000" }}
+        className="w-full h-full"
       >
-        <div className='border-2 rounded-md h-full p-4 whack-a-mole-board'>
+        <div className="border-2 rounded-md h-full p-4 whack-a-mole-board">
           {holesData.map((hole, index) => {
             return (
               <div
@@ -159,16 +180,14 @@ export default function WhackAMole() {
                   holeRefs.current[index] = el;
                 }}
                 className={`whack-a-mole-hole`}
-                onClick={
+                onClick={() => {
                   moles?.[index]
-                    ? () => {
-                        handleWhacedAMole(index);
-                      }
-                    : undefined
-                }
-                style={{ overflow: 'hidden' }}
+                    ? handleWhackedAMole(index)
+                    : handleUnWhackedAMole(index);
+                }}
+                style={{ overflow: "hidden" }}
               >
-                {moles?.[index] ? <div className='mole'></div> : null}
+                {moles?.[index] ? <div className="mole"></div> : null}
               </div>
             );
           })}

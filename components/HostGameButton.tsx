@@ -1,24 +1,24 @@
 // components/HostGameButton.tsx
-"use client";
-import { usePlayerId } from "@/lib/store/user";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
+'use client';
+import { usePlayerId } from '@/lib/store/user';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 const HostGameButton: React.FC = () => {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState('');
 
   const hostGame = async () => {
     if (!displayName) {
-      toast.error("Please enter name");
+      toast.error('Please enter name');
       return;
     }
 
-    const response = await fetch("/api/createGame", {
-      method: "POST",
+    const response = await fetch('/api/createGame', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ displayName }),
     });
@@ -29,6 +29,7 @@ const HostGameButton: React.FC = () => {
       router.push(`/lobby/${data.gameId}`);
       if (data.hostId) {
         usePlayerId.getState().setState(data.hostId);
+        localStorage.setItem('playerId', data.hostId);
       }
     } else {
       console.error(data.error);
@@ -37,12 +38,13 @@ const HostGameButton: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className='flex flex-col justify-items-center items-center gap-3'>
       <input
-        type="text"
+        type='text'
+        className='w-1/2'
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
-        placeholder="Enter your display name"
+        placeholder='Enter your display name'
       />
       <button onClick={hostGame}>Host Game</button>
     </div>

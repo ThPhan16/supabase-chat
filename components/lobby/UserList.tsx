@@ -1,9 +1,9 @@
 // pages/lobby/[gameId].tsx
-"use client";
-import { FC, useEffect, useState } from "react";
-import { supabaseBrowserClient } from "@/utils/supabase/client";
-import { usePlayerId } from "@/lib/store/user";
-import { useRouter } from "next/navigation";
+'use client';
+import { FC, useEffect, useState } from 'react';
+import { supabaseBrowserClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
+import { usePlayerId } from '@/lib/store/user';
 
 interface PageProps {
   gameId?: string;
@@ -11,7 +11,8 @@ interface PageProps {
 
 const UserList: FC<PageProps> = ({ gameId }) => {
   const supabase = supabaseBrowserClient();
-  const playerId = usePlayerId((s) => s.state.playerId);
+  const playerId =
+    usePlayerId((s) => s.state.playerId) || localStorage.getItem('playerId');
   const [players, setPlayers] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const isHost = players.some(
@@ -21,10 +22,10 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
   const startGame = async () => {
     try {
-      const response = await fetch("/api/startGame", {
-        method: "POST",
+      const response = await fetch('/api/startGame', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ gameId }),
       });
@@ -36,7 +37,7 @@ const UserList: FC<PageProps> = ({ gameId }) => {
         // Handle error (e.g., show a notification)
       }
     } catch (err) {
-      console.error("An error occurred while starting the game:", err);
+      console.error('An error occurred while starting the game:', err);
     }
   };
 
@@ -45,9 +46,9 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
     const fetchPlayers = async () => {
       const { data, error } = await supabase
-        .from("players")
-        .select("*")
-        .eq("game_id", gameId);
+        .from('players')
+        .select('*')
+        .eq('game_id', gameId);
 
       if (error) {
         setError(error.message);
@@ -61,10 +62,10 @@ const UserList: FC<PageProps> = ({ gameId }) => {
     // Optionally, set up real-time updates
 
     const channels = supabase
-      .channel("custom-insert-channel")
+      .channel('custom-insert-channel')
       .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "players" },
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'players' },
         (payload) => {
           setPlayers((val) => [...val, payload.new]);
         }
@@ -72,17 +73,17 @@ const UserList: FC<PageProps> = ({ gameId }) => {
       .subscribe();
 
     const gameChannel = supabase
-      .channel("custom-filter-channel")
+      .channel('custom-filter-channel')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "UPDATE",
-          schema: "public",
-          table: "games",
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'games',
           filter: `id=eq.${gameId}`,
         },
         (payload) => {
-          if (payload.new.state === "in_progress") {
+          if (payload.new.state === 'in_progress') {
             router.push(`/game/${gameId}`);
           }
         }
@@ -104,7 +105,7 @@ const UserList: FC<PageProps> = ({ gameId }) => {
       <ul>
         {players.map((player) => (
           <li key={player.id}>
-            {player.display_name} {player.id === playerId ? "(You)" : ""}
+            {player.display_name} {player.id === playerId ? '(You)' : ''}
           </li>
         ))}
       </ul>

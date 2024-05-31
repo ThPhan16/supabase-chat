@@ -1,16 +1,15 @@
-'use client';
+"use client";
 
-import { useLeaderboard } from '@/lib/hook/leaderboard';
-import { EChannel } from '@/lib/types/event';
-import { Database } from '@/lib/types/supabase';
-import { sortLeaderboardByPoint } from '@/lib/utils';
-import { supabaseBrowserClient } from '@/utils/supabase/client';
+import { useLeaderboard } from "@/lib/hook/leaderboard";
+import { EChannel } from "@/lib/types/event";
+import { Database } from "@/lib/types/supabase";
+import { sortLeaderboardByPoint } from "@/lib/utils";
+import { supabaseBrowserClient } from "@/utils/supabase/client";
 import {
   RealtimePostgresInsertPayload,
   RealtimePostgresUpdatePayload,
-} from '@supabase/supabase-js';
-import Image from 'next/image';
-import { FC, useEffect } from 'react';
+} from "@supabase/supabase-js";
+import { FC, useEffect } from "react";
 
 interface Props {
   gameId?: string;
@@ -28,10 +27,10 @@ const LeaderBoard: FC<Props> = ({ gameId }) => {
   const handleGetLeaderboards = (
     payload:
       | RealtimePostgresInsertPayload<
-          Database['public']['Tables']['players']['Row']
+          Database["public"]["Tables"]["players"]["Row"]
         >
       | RealtimePostgresUpdatePayload<
-          Database['public']['Tables']['players']['Row']
+          Database["public"]["Tables"]["players"]["Row"]
         >
   ) => {
     console.log(data);
@@ -53,8 +52,8 @@ const LeaderBoard: FC<Props> = ({ gameId }) => {
 
     channel
       .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'players' },
+        "postgres_changes",
+        { event: "*", schema: "public", table: "players" },
         (payload: any) => {
           handleGetLeaderboards(payload);
         }
@@ -67,11 +66,11 @@ const LeaderBoard: FC<Props> = ({ gameId }) => {
   }, [JSON.stringify(data)]);
 
   return (
-    <div className='w-[30%] border-2 rounded-md h-full p-4 flex flex-col gap-4'>
+    <div className="w-[20%] border-2 rounded-md h-full p-4 flex flex-col gap-4">
       {data.map((el, index) => {
         return (
-          <div key={index} className='flex items-center justify-between gap-4'>
-            <div className='flex items-center gap-2'>
+          <div key={index} className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
               {/* <Image
                 src={el.profiles.avatar_url ?? ""}
                 alt={""}

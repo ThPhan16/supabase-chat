@@ -115,6 +115,8 @@ export default function WhackAMole() {
       return;
     }
 
+    unWhackedPoint.current = 0;
+
     const channel = supabase.channel(`whack-mole-${param?.gameId}`);
 
     channel

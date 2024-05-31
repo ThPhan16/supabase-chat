@@ -1,9 +1,14 @@
 "use client";
 
 import { useLeaderboard } from "@/lib/hook/leaderboard";
+import { usePlayerId } from "@/lib/store/user";
 import { EChannel } from "@/lib/types/event";
 import { Database } from "@/lib/types/supabase";
-import { sortLeaderboardByPoint } from "@/lib/utils";
+import {
+  getFirstTwoLetters,
+  sortLeaderboardByPoint,
+  stringToColor,
+} from "@/lib/utils";
 import { supabaseBrowserClient } from "@/utils/supabase/client";
 import {
   RealtimePostgresInsertPayload,
@@ -18,6 +23,7 @@ interface Props {
 const LeaderBoard: FC<Props> = ({ gameId }) => {
   const supabase = supabaseBrowserClient();
 
+  const playerId = usePlayerId((s) => s.state.playerId);
   const { data, setData, fetchLeaderboardData } = useLeaderboard(gameId);
 
   useEffect(() => {
@@ -33,7 +39,6 @@ const LeaderBoard: FC<Props> = ({ gameId }) => {
           Database["public"]["Tables"]["players"]["Row"]
         >
   ) => {
-    console.log(data);
     const newData = [...data]
       .map((el) => {
         if (el.id !== payload.new.id) {
@@ -65,22 +70,33 @@ const LeaderBoard: FC<Props> = ({ gameId }) => {
     };
   }, [JSON.stringify(data)]);
 
+  if (!data?.length) {
+    return (
+      <div className="w-full md:w-[20%] border-2 rounded-md h-full p-4 flex flex-col gap-4"></div>
+    );
+  }
+
   return (
-    <div className="w-[20%] border-2 rounded-md h-full p-4 flex flex-col gap-4">
+    <div className="w-full md:w-[20%] border-2 rounded-md h-full p-4 flex flex-col gap-4">
       {data.map((el, index) => {
         return (
-          <div key={index} className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              {/* <Image
-                src={el.profiles.avatar_url ?? ""}
-                alt={""}
-                width={40}
-                height={40}
-                className="rounded-full ring-2"
-              /> */}
-              <span>{el.display_name}</span>
+          <div key={index} className="flex items-center justify-between gap-2 ">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div
+                className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center`}
+                style={{ backgroundColor: stringToColor(el.display_name) }}
+              >
+                <span className="font-bold uppercase">
+                  {getFirstTwoLetters(el.display_name)}
+                </span>
+              </div>
+              <div className="flex flex-col gap-4">
+                <span className="text-ellipsis whitespace-nowrap overflow-hidden">
+                  {el.display_name}
+                </span>
+              </div>
             </div>
-            <span>{el.score}</span>
+            <span className="font-semibold">{el.score ?? 0}</span>
           </div>
         );
       })}

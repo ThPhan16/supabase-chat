@@ -1,5 +1,5 @@
 "use client";
-import { usePalyerId } from "@/lib/store/user";
+import { usePlayerId } from "@/lib/store/user";
 import { supabaseBrowserClient } from "@/utils/supabase/client";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +12,7 @@ const UN_WHACKED_MOLE_POINT = 4;
 export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
 
-  const playerId = usePalyerId((s) => s.state.playerId);
+  const playerId = usePlayerId((s) => s.state.playerId);
   const whackedPoint = useRef(0);
   const unWhackedPoint = useRef(0);
   const holesData = Array(42).fill(false);
@@ -167,7 +167,7 @@ export default function WhackAMole() {
   };
 
   return (
-    <div className="flex items-center justify-between gap-6 w-full h-full">
+    <div className="flex items-center justify-between flex-col md:flex-row gap-6 w-full h-full">
       <div
         id={MOLE_HAMMER_AREA}
         style={{ backgroundColor: "#000" }}

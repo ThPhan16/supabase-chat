@@ -6,6 +6,7 @@ import LeaderBoard from './LeaderBoard';
 import { EChannel } from '@/lib/types/event';
 import { useParams } from 'next/navigation';
 import { Database } from '@/lib/types/supabase';
+import { channel } from 'diagnostics_channel';
 
 const MOLE_HAMMER_AREA = 'mole-hammer-area';
 
@@ -36,19 +37,20 @@ export default function WhackAMole() {
       .eq('game_id', param.gameId);
   };
 
-  useEffect(() => {
-    getPlayers().then((res) => {
-      if (res?.data) {
-        const hostGame = res.data.find((el) => el.is_host);
+  // useEffect(() => {
+  //   getPlayers().then((res) => {
+  //     if (res?.data) {
+  //       const hostGame = res.data.find((el) => el.is_host);
 
-        console.log('hostGame', hostGame);
+  //       console.log('hostGame', hostGame);
 
-        if (hostGame) {
-          setHost(host);
-        }
-      }
-    });
-  }, [param]);
+  //       if (hostGame) {
+  //         setHost(host);
+  //       }
+  //     }
+  //   });
+  // }, [param]);
+  // console.log(playerId);
 
   useEffect(() => {
     const element = document.getElementById(MOLE_HAMMER_AREA);
@@ -74,74 +76,160 @@ export default function WhackAMole() {
     };
   }, []);
 
-  const handlePresenceChanges = () => {
-    const channel = supabase.channel(EChannel.HAMMER_PRESENCE);
+  // useEffect(() => {
+  //   if (!param?.gameId) return;
 
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        if (host?.id) {
-          return;
-        }
+  //   const getHost = async () => {
+  //     const { data, error } = await supabase
+  //       .from('players')
+  //       .select('*')
+  //       .eq('game_id', param.gameId);
 
-        console.log('player');
+  //     if (error) {
+  //       console.error(error);
+  //       return;
+  //     }
 
-        const channelState = channel.presenceState<{ newMoles: boolean[] }>();
+  //     const hostGame = data?.find((el) => el.is_host);
 
-        const newMoles = Object.values(channelState)[0]?.[0]?.newMoles;
+  //     const channel = supabase.channel('gameplay');
 
-        if (newMoles?.length) {
-          setMoles(newMoles);
-        }
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('host');
-          const newMoles = moles.map(() => Math.random() < 0.3);
+  //     channel
+  //       .on('presence', { event: 'sync' }, () => {
+  //         // console.log(payload.payload);
+  //         // if (host?.id) {
+  //         //   return;
+  //         // }
 
-          await channel.track({
-            newMoles,
-          });
-        }
-      });
-  };
+  //         // console.log('player');
+
+  //         const channelState = channel.presenceState<{ newMoles: boolean[] }>();
+
+  //         const newMoles = Object.values(channelState)[0]?.[0]?.newMoles;
+
+  //         if (newMoles?.length) {
+  //           setMoles(newMoles);
+  //         }
+  //       })
+  //       .subscribe(async (status) => {
+  //         if (status === 'SUBSCRIBED') {
+  //           console.log('host', hostGame);
+  //           console.log('player', playerId);
+  //           if (hostGame?.id !== playerId) {
+  //             return;
+  //           }
+
+  //           console.log('Host is broadcasting mole positions.');
+
+  //           const intervalId = setInterval(() => {
+  //             const newMoles = moles.map(() => Math.random() < 0.3);
+
+  //             channel.track({
+  //               // type: 'broadcast',
+  //               // event: 'mole-pos',
+  //               // payload: newMoles,
+  //               newMoles,
+  //             });
+  //           }, 2000);
+
+  //           return () => clearInterval(intervalId);
+  //         }
+  //       });
+  //   };
+
+  //   getHost();
+  // }, [playerId, param?.gameId]);
 
   useEffect(() => {
-    // Initial subscription
-    // handlePresenceChanges();
+    if (!param?.gameId) return;
 
-    // Subscribe using setInterval for repeated calls every 2 seconds
-    const interval = setInterval(() => {
-      handlePresenceChanges();
-    }, 2000);
+    const getHost = async () => {
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .eq('game_id', param.gameId);
 
-    return () => {
-      clearInterval(interval);
-      // channel.unsubscribe();
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const hostGame = data?.find((el) => el.is_host);
+      if (hostGame) setHost(hostGame);
+
+      const channel = supabase.channel(param.gameId);
+
+      channel
+        .on('broadcast', { event: 'mole-pos' }, (payload) => {
+          if (payload.payload) {
+            setMoles(payload.payload);
+          }
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('host', hostGame);
+            console.log('player', playerId);
+            if (hostGame?.id !== playerId) {
+              return;
+            }
+
+            console.log('Host is broadcasting mole positions.');
+
+            // const intervalId = setInterval(() => {
+            const newMoles = moles.map(() => Math.random() < 0.3);
+            setMoles(newMoles);
+
+            channel.send({
+              type: 'broadcast',
+              event: 'mole-pos',
+              payload: newMoles,
+            });
+            // }, 2000);
+
+            // return () => clearInterval(intervalId);
+          }
+        });
     };
-  }, []);
+
+    getHost();
+  }, [playerId, param?.gameId]);
+
+  const setExplode = (indx: number) => {
+    setMoles((prev) => prev.map((el, idx) => (idx == indx ? false : el)));
+
+    const hole = holeRefs.current[indx];
+    const explotion = document.createElement('div');
+    explotion.classList.add('whacked');
+    hole?.appendChild(explotion);
+
+    setTimeout(() => {
+      hole?.removeChild(explotion);
+    }, 300);
+  };
 
   const handleWhacedAMole = async (index: number) => {
     if (!playerId) {
       return;
     }
 
-    setMoles(moles.map((mole, i) => (i === index ? false : mole)));
+    const channel = supabase.channel(`whack-mole-${param?.gameId}`);
 
-    const hole = holeRefs.current[index];
-    // hole?.classList.add('whacked');
-    const explotion = document.createElement('div');
-    explotion.classList.add('whacked');
-    hole?.appendChild(explotion);
-
-    setTimeout(() => {
-      // hole?.classList.remove('whacked');
-      hole?.removeChild(explotion);
-    }, 300);
-
-    await supabase.from('moles').upsert({
-      state: 'hide',
-      position: 1,
-    });
+    channel
+      .on('broadcast', { event: 'hit-mole' }, (payload) => {
+        if (payload.payload) {
+          setExplode(payload.payload);
+        }
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          setExplode(index);
+          await channel.send({
+            type: 'broadcast',
+            event: 'hit-mole',
+            payload: index,
+          });
+        }
+      });
 
     await supabase
       .from('players')

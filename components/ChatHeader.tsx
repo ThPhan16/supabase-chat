@@ -1,35 +1,28 @@
-"use client";
-import { UserState, useUser } from "@/lib/store/user";
-import { supabaseBrowserClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import ChatPresence from "./ChatPresence";
-import { Button } from "./ui/button";
-import { ETab, useTab } from "@/lib/store/tab";
-import { useEffect } from "react";
+'use client';
+import { UserState, useUser } from '@/lib/store/user';
+import { supabaseBrowserClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
+import ChatPresence from './ChatPresence';
+import { Button } from './ui/button';
+import { ETab, useTab } from '@/lib/store/tab';
+import { useEffect } from 'react';
 
-export default function ChatHeader({ user }: { user: UserState["user"] }) {
+export default function ChatHeader({ user }: { user: UserState['user'] }) {
   const clearUser = useUser((state) => state.clearUser);
   const { tab, setTab } = useTab((state) => state);
   const router = useRouter();
 
   useEffect(() => {
-    const [_, currentTab] = window.location.hash.split("#");
-
-    if (!currentTab) {
-      window.location.replace(`${window.location.origin}#${ETab.CHAT}`);
-    }
-
-    if (currentTab && currentTab !== ETab.CHAT) {
-      setTab(currentTab as ETab);
-    }
+    setTab(ETab.GAME);
+    window.location.replace(`${window.location.origin}/${tab}`);
   }, []);
 
   const handleLoginWithGithub = () => {
     const supabase = supabaseBrowserClient();
     supabase.auth.signInWithOAuth({
-      provider: "github",
+      provider: 'github',
       options: {
-        redirectTo: location.origin + "/auth/callback",
+        redirectTo: location.origin + '/auth/callback',
       },
     });
   };
@@ -48,13 +41,13 @@ export default function ChatHeader({ user }: { user: UserState["user"] }) {
   };
 
   return (
-    <div className="h-20">
-      <div className="p-5 border-b flex items-center justify-between h-full">
-        <div className="flex items-center justify-between gap-20">
+    <div className='h-20'>
+      <div className='p-5 border-b flex items-center justify-between h-full'>
+        <div className='flex items-center justify-between gap-20'>
           <div>
-            <div className="flex gap-3 items-center">
-              <span className="text-xl font-bold">Daily Chat</span>
-              <span className="text-xs font-medium pt-1">
+            <div className='flex gap-3 items-center'>
+              <span className='text-xl font-bold'>Daily Chat</span>
+              <span className='text-xs font-medium pt-1'>
                 {user?.user_metadata.user_name}
               </span>
             </div>
@@ -62,10 +55,10 @@ export default function ChatHeader({ user }: { user: UserState["user"] }) {
           </div>
 
           {user ? (
-            <div className="flex items-center justify-between gap-8">
+            <div className='flex items-center justify-between gap-8'>
               <span
                 className={`text-xl font-semibold cursor-pointer ${
-                  tab === ETab.CHAT ? "border-b-4 border-b-violet-700" : ""
+                  tab === ETab.CHAT ? 'border-b-4 border-b-violet-700' : ''
                 }`}
                 onClick={handleSelectTab(ETab.CHAT)}
               >
@@ -73,7 +66,7 @@ export default function ChatHeader({ user }: { user: UserState["user"] }) {
               </span>
               <span
                 className={`text-xl font-semibold cursor-pointer ${
-                  tab === ETab.GAME ? "border-b-4 border-b-violet-700" : ""
+                  tab === ETab.GAME ? 'border-b-4 border-b-violet-700' : ''
                 }`}
                 onClick={handleSelectTab(ETab.GAME)}
               >

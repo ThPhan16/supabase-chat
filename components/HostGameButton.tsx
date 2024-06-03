@@ -38,15 +38,42 @@ const HostGameButton: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col justify-items-center items-center gap-3'>
-      <input
-        type='text'
-        className='w-1/2'
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-        placeholder='Enter your display name'
-      />
-      <button onClick={hostGame}>Host Game</button>
+    // <div className='flex items-center justify-center min-h-screen bg-purple-800'>
+    //   <input
+    //     type='text'
+    //     className='border border-gray-300 rounded p-2 w-full mb-4'
+    //     value={displayName}
+    //     onChange={(e) => setDisplayName(e.target.value)}
+    //     placeholder='Enter your display name'
+    //   />
+    //   <button
+    //     className='bg-black text-white py-2 px-4 rounded w-full'
+    //     onClick={hostGame}
+    //   >
+    //     Host Game
+    //   </button>
+    // </div>
+
+    <div className='flex items-center justify-center'>
+      <div className='text-center'>
+        <div className='bg-white rounded '>
+          <h2 className='text-blue-800 font-medium text-lg pb-2'>Host game</h2>
+          <input
+            type='text'
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder='Enter your display name'
+            className='border border-gray-300 rounded bg-white p-2 w-full mb-4 text-gray-500 focus:border-gray-500 '
+          />
+          <button
+            type='submit'
+            className='bg-blue-800 hover:bg-blue-700  text-white py-2 px-4 rounded w-full'
+            onClick={hostGame}
+          >
+            Enter
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 'use client';
 import { usePlayerId } from '@/lib/store/user';
 import { supabaseBrowserClient } from '@/utils/supabase/client';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import LeaderBoard from './LeaderBoard';
@@ -11,6 +11,7 @@ const UN_WHACKED_MOLE_POINT = 4;
 
 export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
+  const router = useRouter();
 
   const playerId = usePlayerId((s) => s.state.playerId);
   const whackedPoint = useRef(0);
@@ -72,6 +73,11 @@ export default function WhackAMole() {
             setMoles(payload.payload.newMoles);
           }
         })
+        .on('broadcast', { event: 'game-end' }, () => {
+          console.log('endddd');
+          router.push(`/game-result/${param.gameId}`);
+          channel.unsubscribe();
+        })
         .subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
             if (hostGame?.id !== playerId) {
@@ -88,7 +94,30 @@ export default function WhackAMole() {
               });
             }, 2000);
 
-            return () => clearInterval(intervalId);
+            const gameTimer = setTimeout(async () => {
+              // Update game state to finished in the database
+              await supabase
+                .from('games')
+                .update({ state: 'finished' })
+                .eq('id', param.gameId);
+
+              // Notify players that the game has ended
+              await channel.send({
+                type: 'broadcast',
+                event: 'game-end',
+                payload: {},
+              });
+              clearInterval(intervalId);
+              channel.unsubscribe();
+
+              router.push(`/game-result/${param.gameId}`);
+            }, 120000);
+
+            return () => {
+              clearInterval(intervalId);
+              clearTimeout(gameTimer);
+              // channel.unsubscribe();
+            };
           }
         });
     };
@@ -172,7 +201,7 @@ export default function WhackAMole() {
         style={{ backgroundColor: '#000' }}
         className='w-full h-full'
       >
-        <div className='border-2 rounded-md h-full p-4 whack-a-mole-board'>
+        <div className='border-4 rounded-md h-full p-4 whack-a-mole-board'>
           {holesData.map((hole, index) => {
             return (
               <div

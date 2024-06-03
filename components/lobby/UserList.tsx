@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import { supabaseBrowserClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { usePlayerId } from '@/lib/store/user';
+import { getFirstTwoLetters, stringToColor } from '@/lib/utils';
 
 interface PageProps {
   gameId?: string;
@@ -107,15 +108,31 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
   return (
     <>
-      <ul>
-        {players.map((player) => (
-          <li key={player.id}>
-            {player.display_name} {player.id === playerId ? '(You)' : ''}
-          </li>
-        ))}
-      </ul>
-
-      {isHost ? <button onClick={startGame}>Start Game</button> : null}
+      <div className='grow m-10 mt-2 w-1/2 p-10 bg-opacity-10 rounded-lg bg-black'>
+        <ul className='flex flex-wrap gap-3'>
+          {players.map((player) => (
+            <li key={player.id} className='flex gap-3 items-center font-bold'>
+              <div
+                className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center`}
+                style={{ backgroundColor: stringToColor(player.display_name) }}
+              >
+                <span className='font-bold uppercase'>
+                  {getFirstTwoLetters(player.display_name)}
+                </span>
+              </div>
+              {player.display_name} {player.id === playerId ? '(You)' : ''}
+            </li>
+          ))}
+        </ul>
+      </div>
+      {isHost ? (
+        <button
+          className='p-4 mb-8 bg-white rounded text-gray-800 font-bold'
+          onClick={startGame}
+        >
+          Start Game
+        </button>
+      ) : null}
     </>
   );
 };

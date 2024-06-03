@@ -58,7 +58,7 @@ export default function ChatHeader({ user }: { user: UserState['user'] }) {
             <div className='flex items-center justify-between gap-8'>
               <span
                 className={`text-xl font-semibold cursor-pointer ${
-                  tab === ETab.CHAT ? 'border-b-4 border-b-violet-700' : ''
+                  tab === ETab.CHAT ? 'border-b-4 border-b-blue-700' : ''
                 }`}
                 onClick={handleSelectTab(ETab.CHAT)}
               >
@@ -66,7 +66,7 @@ export default function ChatHeader({ user }: { user: UserState['user'] }) {
               </span>
               <span
                 className={`text-xl font-semibold cursor-pointer ${
-                  tab === ETab.GAME ? 'border-b-4 border-b-violet-700' : ''
+                  tab === ETab.GAME ? 'border-b-4 border-b-blue-700' : ''
                 }`}
                 onClick={handleSelectTab(ETab.GAME)}
               >

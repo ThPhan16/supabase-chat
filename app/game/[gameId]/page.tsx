@@ -13,7 +13,6 @@ interface PageProps {
 
 const page = async ({ params }: PageProps) => {
   const { gameId } = params;
-  console.log('$$$$$');
 
   return (
     <div className='h-screen w-full p-10'>

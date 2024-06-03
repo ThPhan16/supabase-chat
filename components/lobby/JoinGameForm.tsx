@@ -48,10 +48,11 @@ const JoinGameForm: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col justify-center items-center gap-3'>
+    <div className='flex flex-col justify-center items-center '>
+      <h2 className='text-blue-800 font-medium text-lg p-2'>Join game</h2>
       <input
         type='text'
-        className='border-slate-200 placeholder-slate-400 contrast-more:border-slate-400 contrast-more:placeholder-slate-500 w-1/2'
+        className='border border-gray-300 rounded bg-white p-2 w-full mb-4 text-gray-500 focus:border-gray-500'
         value={roomId}
         onChange={(e) => setRoomId(e.target.value)}
         placeholder='Enter room ID'
@@ -59,12 +60,17 @@ const JoinGameForm: React.FC = () => {
 
       <input
         type='text'
-        className='border-slate-200 placeholder-slate-400 contrast-more:border-slate-400 contrast-more:placeholder-slate-500 w-1/2'
+        className='border border-gray-300 rounded bg-white p-2 w-full mb-4 text-gray-500 focus:border-gray-500'
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
         placeholder='Enter your display name'
       />
-      <button onClick={joinGame}>Join Game</button>
+      <button
+        className='bg-blue-800 hover:bg-blue-700  text-white py-2 px-4 rounded w-full'
+        onClick={joinGame}
+      >
+        Join Game
+      </button>
     </div>
   );
 };

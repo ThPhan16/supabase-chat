@@ -27,8 +27,6 @@ export default function WhackAMole() {
 
   const param = useParams<{ gameId: string }>();
 
-  console.log('playerId', playerId);
-
   useEffect(() => {
     const element = document.getElementById(MOLE_HAMMER_AREA);
     if (!element) {
@@ -53,6 +51,32 @@ export default function WhackAMole() {
     };
   }, []);
 
+  /// get score
+  useEffect(() => {
+    if (!playerId) {
+      return;
+    }
+
+    const getScore = async () => {
+      const { data, error } = await supabase
+        .from('players')
+        .select('score')
+        .eq('id', playerId)
+        .single();
+
+      if (error) {
+        console.log('get score error', error);
+        return;
+      }
+
+      if (data.score) {
+        whackedPoint.current = data.score;
+      }
+    };
+
+    getScore();
+  }, [playerId]);
+
   useEffect(() => {
     if (!param?.gameId) return;
 
@@ -65,11 +89,6 @@ export default function WhackAMole() {
       if (error) {
         console.error(error);
         return;
-      }
-
-      let userId = playerId;
-      if (localStorage && !playerId) {
-        userId = localStorage.getItem('playerId') || '';
       }
 
       const hostGame = data?.find((el) => el.is_host);
@@ -89,7 +108,7 @@ export default function WhackAMole() {
         })
         .subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
-            if (hostGame?.id !== userId) {
+            if (hostGame?.id !== playerId) {
               return;
             }
 

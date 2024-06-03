@@ -65,7 +65,12 @@ const UserList: FC<PageProps> = ({ gameId }) => {
       .channel('custom-insert-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'players' },
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'players',
+          filter: `game_id=eq.${gameId}`,
+        },
         (payload) => {
           setPlayers((val) => [...val, payload.new]);
         }

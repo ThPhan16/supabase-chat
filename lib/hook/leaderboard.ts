@@ -11,7 +11,7 @@ export const useLeaderboard = (gameId?: string) => {
   const fetchLeaderboardData = async () => {
     const { data, error } = await supabase
       .from('players')
-      .select('id,display_name')
+      .select('*')
       .eq('game_id', gameId || '')
       .order('score', { ascending: false });
 

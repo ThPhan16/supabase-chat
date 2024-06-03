@@ -28,7 +28,7 @@ export default function Main({ user }: { user: UserState['user'] }) {
               <ChatInput />
             </>
           ) : (
-            <WhackAMole />
+            <div />
           )
         ) : (
           <ChatAbout />

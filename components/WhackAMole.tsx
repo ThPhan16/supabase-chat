@@ -13,7 +13,10 @@ export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
   const router = useRouter();
 
-  const playerId = usePlayerId((s) => s.state.playerId);
+  const playerId =
+    usePlayerId((s) => s.state.playerId) ||
+    localStorage.getItem('playerId') ||
+    '';
   const whackedPoint = useRef(0);
   const unWhackedPoint = useRef(0);
   const holesData = Array(42).fill(false);
@@ -23,6 +26,8 @@ export default function WhackAMole() {
   const [moles, setMoles] = useState<boolean[]>(holesData);
 
   const param = useParams<{ gameId: string }>();
+
+  console.log('playerId', playerId);
 
   useEffect(() => {
     const element = document.getElementById(MOLE_HAMMER_AREA);

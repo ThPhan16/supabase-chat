@@ -62,8 +62,12 @@ export default function WhackAMole() {
         return;
       }
 
+      let userId = playerId;
+      if (localStorage && !playerId) {
+        userId = localStorage.getItem('playerId') || '';
+      }
+
       const hostGame = data?.find((el) => el.is_host);
-      // if (hostGame) setHost(hostGame);
 
       const channel = supabase.channel(param.gameId);
 
@@ -80,7 +84,7 @@ export default function WhackAMole() {
         })
         .subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
-            if (hostGame?.id !== playerId) {
+            if (hostGame?.id !== userId) {
               return;
             }
 

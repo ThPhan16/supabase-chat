@@ -93,7 +93,9 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver }) => {
 
   if (!data?.length) {
     return (
-      <div className='w-full md:w-[20%]  rounded-md h-full p-4 flex flex-col gap-4'></div>
+      <div className='w-full md:w-[20%]  rounded-md h-full p-4 flex flex-col gap-4'>
+        <span className='font-normal text-lg'>Loading...</span>
+      </div>
     );
   }
 

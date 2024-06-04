@@ -49,7 +49,7 @@ export const GameId = (props: { gameId: string }) => {
       </p>
       <ul className='w-full'>
         <p className='w-full text-center text-2xl p-4 pb-2'>Rules</p>
-        <li>- Each game last 120 seconds</li>
+        <li>- Each game last 60 seconds</li>
         <li>- For every hit, you have 1 point</li>
         <li>- If you miss 4 times, 1 point will be taken</li>
       </ul>

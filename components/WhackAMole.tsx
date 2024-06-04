@@ -155,7 +155,7 @@ export default function WhackAMole() {
               channel.unsubscribe();
 
               router.push(`/game-result/${param.gameId}`);
-            }, 123000);
+            }, 63000);
 
             return () => {
               clearInterval(intervalId);

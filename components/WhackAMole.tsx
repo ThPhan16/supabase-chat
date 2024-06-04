@@ -275,7 +275,7 @@ export default function WhackAMole() {
         <LeaderBoard gameId={param?.gameId} />
       </div>
       {countdown > 0 ? (
-        <div className='absolute top-0 left-0 h-screen w-screen bg-black  text-center z-[5000] bg-opacity-30 flex items-center justify-center text-7xl'>
+        <div className='absolute top-0 left-0 h-[100dvh] w-screen bg-black  text-center z-[5000] bg-opacity-30 flex items-center justify-center text-7xl'>
           {countdown}
         </div>
       ) : null}

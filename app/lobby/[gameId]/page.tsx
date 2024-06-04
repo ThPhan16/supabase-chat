@@ -11,7 +11,7 @@ const page = async ({ params }: PageProps) => {
   const { gameId } = params;
 
   return (
-    <div className='min-h-screen w-full flex flex-col justify-center items-center gap-6 bg-blue-900 pb-8 p-2'>
+    <div className='min-h-[100dvh] w-full flex flex-col justify-center items-center gap-6 bg-blue-900 pb-8 p-2'>
       <div className='bg-shape-square'></div>
       <div className='bg-shape-circle'></div>
       <GameId gameId={gameId} />

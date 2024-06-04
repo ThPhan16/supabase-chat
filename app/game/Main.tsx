@@ -7,7 +7,7 @@ import BackgroundIcon from '@/assets/background.svg';
 const Main = () => {
   return (
     <div
-      className='min-h-screen w-full flex flex-col justify-center items-center gap-10 bg-blue-900 p-2'
+      className='h-[100dvh] w-full flex flex-col justify-center items-center gap-10 bg-blue-900 p-2'
       style={
         {
           // backgroundColor: '',

@@ -22,7 +22,7 @@ interface Store {
 }
 
 const initState: State = {
-  playerId: localStorage.getItem('playerId') || null,
+  playerId: null,
 };
 
 export const usePlayerId = create(

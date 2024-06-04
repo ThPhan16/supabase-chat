@@ -27,7 +27,10 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
   const supabase = supabaseBrowserClient();
   const router = useRouter();
 
-  const playerId = usePlayerId((s) => s.state.playerId);
+  const playerId =
+    usePlayerId((s) => s.state.playerId) ||
+    localStorage.getItem('playerId') ||
+    '';
   const { data, setData, fetchLeaderboardData } = useLeaderboard(gameId);
 
   // const [time, setTime] = useState(0); // 90 seconds = 1 minute 30 seconds

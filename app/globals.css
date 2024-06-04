@@ -65,43 +65,71 @@
   /* gap: 30px; */
 }
 
+input:focus-visible {
+  outline: none;
+}
+
 #mole-hammer-area {
-  cursor: url('~/assets/hammer-cursor.png'), auto;
+  cursor: url("~/assets/hammer-cursor.png"), auto;
 }
 
 .hammer-hit {
-  cursor: url('~/assets/hammer-hit.png'), auto !important;
+  cursor: url("~/assets/hammer-hit.png"), auto !important;
   transition: 100ms;
 }
 
 .whack-a-mole-hole {
-  background-image: url('~/assets/hole.png');
+  background-image: url("~/assets/hole.png");
   background-repeat: no-repeat;
   background-size: contain;
-  background-position: center;
+  background-position: bottom;
   width: 100%;
   height: 100%;
   position: relative;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  z-index: 90;
+  position: absolute;
+  /* width: 100px; */
+  /* height: 100px; */
+}
+
+.whack-a-mole-half-hole {
+  background-image: url("~/assets/half-hole.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 900;
+  position: absolute;
+  /* width: 100px; */
+  /* height: 100px; */
 }
 
 .mole {
   background-repeat: no-repeat;
   background-size: contain;
-  background-position: center;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background-image: url('~/assets/mole.png');
-  /* animation: popUp 2s ease-in-out forwards infinite; */
+  background-position: bottom;
+  width: 90%;
+  height: 60%;
+  z-index: 100;
+  background-image: url("~/assets/mole.png");
+  animation: popUp 2s ease-in forwards infinite;
+  /* popDown 2s ease-out forwards infinite; */
+  bottom: 0px;
+  position: absolute;
+  /* bottom: -20px; */
 
-  /* animation: mole-rise 0.3s ease-out; */
-  /* transform: translateX(-50%); */
-  /* position: absolute; */
+  /* transition: transform 2s; */
+  /* transform-origin: 0 100%; */
 }
 
 .whacked {
@@ -113,23 +141,51 @@
   width: 100%;
   height: 100%;
   z-index: 1;
-  background-image: url('~/assets/explotion.gif');
+  background-image: url("~/assets/explotion.gif");
   /* animation: Explode 500ms ease-in-out forwards infinite; */
 }
 
 @keyframes popUp {
   0% {
-    transform: translateY(25%);
+    bottom: -45px;
+    height: 1;
+    display: none;
+    opacity: 0;
   }
   25% {
-    transform: translateY(0%);
+    opacity: 0;
   }
-  75% {
-    transform: translateY(0%);
+  85% {
+    opacity: 0.75;
+  }
+  90% {
+    opacity: 1;
   }
   100% {
-    transform: translateY(25%);
-    /* opacity: 0; */
+    bottom: 40px;
+    opacity: 1;
+  }
+}
+
+@keyframes popDown {
+  0% {
+    bottom: 40px;
+    opacity: 1;
+  }
+  25% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.75;
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
+    bottom: -45px;
+    height: 1;
+    display: none;
+    opacity: 0;
   }
 }
 
@@ -149,7 +205,7 @@
   position: absolute;
   top: 100px;
   left: 100px;
-  background-image: url('~/assets/hammer.png');
+  background-image: url("~/assets/hammer.png");
   background-size: 100% 100%;
 }
 

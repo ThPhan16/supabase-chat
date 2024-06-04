@@ -27,6 +27,21 @@ export default function WhackAMole() {
 
   const param = useParams<{ gameId: string }>();
 
+  const [countdown, setCountdown] = useState(3); // Initial countdown value
+
+  useEffect(() => {
+    const intervalId = setTimeout(() => {
+      console.log(countdown);
+      if (countdown > 0) {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      } else {
+        setCountdown(0);
+        clearInterval(intervalId);
+      }
+    }, 800);
+    return () => clearTimeout(intervalId);
+  }, [countdown]); // Empty dependency array,
+
   useEffect(() => {
     const element = document.getElementById(MOLE_HAMMER_AREA);
     if (!element) {
@@ -48,10 +63,12 @@ export default function WhackAMole() {
     return () => {
       element.removeEventListener('mousedown', onMouseDown);
       element.removeEventListener('mouseup', onMouseUp);
+      // clearInterval(countDownStart);
     };
   }, []);
 
   /// get score
+
   useEffect(() => {
     if (!playerId) {
       return;
@@ -138,12 +155,12 @@ export default function WhackAMole() {
               channel.unsubscribe();
 
               router.push(`/game-result/${param.gameId}`);
-            }, 120000);
+            }, 123000);
 
             return () => {
               clearInterval(intervalId);
               clearTimeout(gameTimeout);
-              // channel.unsubscribe();
+              channel.unsubscribe();
             };
           }
         });
@@ -222,36 +239,43 @@ export default function WhackAMole() {
   };
 
   return (
-    <div className='flex items-center justify-between flex-col md:flex-row gap-2 md:gap-6 w-full h-full'>
-      <div
-        id={MOLE_HAMMER_AREA}
-        style={{ backgroundColor: '#000' }}
-        className='w-full h-full'
-      >
-        <div className='border-4 rounded-md h-full grow-1 p-4 whack-a-mole-board'>
-          {holesData.map((hole, index) => {
-            return (
-              <div
-                key={index}
-                ref={(el) => {
-                  holeRefs.current[index] = el;
-                }}
-                className={`whack-a-mole-hole`}
-                onClick={() => {
-                  moles?.[index]
-                    ? handleWhackedAMole(index)
-                    : handleUnWhackedAMole(index);
-                }}
-                style={{ overflow: 'hidden' }}
-              >
-                {moles?.[index] ? <div className='mole'></div> : null}
-              </div>
-            );
-          })}
+    <>
+      <div className='flex items-center justify-between flex-col md:flex-row gap-2 md:gap-6 w-full h-full'>
+        <div
+          id={MOLE_HAMMER_AREA}
+          style={{ backgroundColor: '#000' }}
+          className='w-full h-full'
+        >
+          <div className='border-4 rounded-md h-full grow-1 p-4 whack-a-mole-board'>
+            {holesData.map((hole, index) => {
+              return (
+                <div
+                  key={index}
+                  ref={(el) => {
+                    holeRefs.current[index] = el;
+                  }}
+                  className={`whack-a-mole-hole`}
+                  onClick={() => {
+                    moles?.[index]
+                      ? handleWhackedAMole(index)
+                      : handleUnWhackedAMole(index);
+                  }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  {moles?.[index] ? <div className='mole'></div> : null}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      <LeaderBoard gameId={param?.gameId} />
-    </div>
+        <LeaderBoard gameId={param?.gameId} />
+      </div>
+      {countdown > 0 ? (
+        <div className='absolute top-0 left-0 h-screen w-screen bg-black  text-center z-[5000] bg-opacity-30 flex items-center justify-center text-7xl'>
+          {countdown}
+        </div>
+      ) : null}
+    </>
   );
 }

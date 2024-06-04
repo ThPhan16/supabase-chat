@@ -109,7 +109,7 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
       >
         {!isOver ? (
           <div className='flex justify-between items-center mb-0 md:mb-4'>
-            <div className='text-xl md:text-2xl '>{formatTime(time)}</div>
+            {/* <div className='text-xl md:text-2xl '>{formatTime(time)}</div> */}
             <div className=''>
               Your score:{' '}
               <span className='font-semibold'>

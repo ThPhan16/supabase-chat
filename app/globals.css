@@ -92,8 +92,6 @@ input:focus-visible {
   overflow: hidden;
   z-index: 90;
   position: absolute;
-  /* width: 100px; */
-  /* height: 100px; */
 }
 
 .whack-a-mole-half-hole {
@@ -110,26 +108,24 @@ input:focus-visible {
   overflow: hidden;
   z-index: 900;
   position: absolute;
-  /* width: 100px; */
-  /* height: 100px; */
 }
 
 .mole {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: bottom;
-  width: 90%;
-  height: 60%;
+  width: 100%;
+  height: 100%;
   z-index: 100;
-  background-image: url("~/assets/mole.png");
-  animation: popUp 2s ease-in forwards infinite;
-  /* popDown 2s ease-out forwards infinite; */
-  bottom: 0px;
+  background-image: url("~/assets/mole-1.png");
+  animation: ScaleUp 2s ease-in-out forwards infinite,
+    ScaleDown 2s ease-in-out forwards infinite;
+  bottom: 2px;
   position: absolute;
-  /* bottom: -20px; */
+}
 
-  /* transition: transform 2s; */
-  /* transform-origin: 0 100%; */
+.mole:target {
+  height: 100%;
 }
 
 .whacked {
@@ -142,17 +138,49 @@ input:focus-visible {
   height: 100%;
   z-index: 1;
   background-image: url("~/assets/explotion.gif");
-  /* animation: Explode 500ms ease-in-out forwards infinite; */
+}
+
+@keyframes ScaleUp {
+  0% {
+    visibility: visible;
+    opacity: 0;
+    bottom: -14px;
+  }
+
+  100% {
+    visibility: visible;
+    opacity: 1;
+    bottom: 20px;
+  }
+}
+
+@keyframes ScaleDown {
+  0% {
+    visibility: visible;
+    opacity: 1;
+    bottom: 20px;
+  }
+
+  80% {
+    visibility: hidden;
+    opacity: 0;
+    bottom: -14px;
+  }
+
+  100% {
+    visibility: visible;
+    opacity: 0;
+    bottom: -14px;
+  }
 }
 
 @keyframes popUp {
   0% {
     bottom: -45px;
     height: 1;
-    display: none;
     opacity: 0;
   }
-  25% {
+  /* 25% {
     opacity: 0;
   }
   85% {
@@ -160,9 +188,13 @@ input:focus-visible {
   }
   90% {
     opacity: 1;
-  }
+  } */
   100% {
-    bottom: 40px;
+    /* bottom: 40px;
+    opacity: 1; */
+
+    bottom: 0;
+    height: 1;
     opacity: 1;
   }
 }

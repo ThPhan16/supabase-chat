@@ -116,38 +116,38 @@ export default function WhackAMole() {
               return;
             }
 
-            const intervalId = setInterval(() => {
-              const newMoles = moles.map(() => Math.random() < 0.3);
-              setMoles(newMoles);
-              channel.send({
-                type: "broadcast",
-                event: "mole-pos",
-                payload: { newMoles },
-              });
-            }, 2000);
+            // const intervalId = setInterval(() => {
+            const newMoles = moles.map(() => 0 < 0.3);
+            setMoles(newMoles);
+            channel.send({
+              type: "broadcast",
+              event: "mole-pos",
+              payload: { newMoles },
+            });
+            // }, 2000);
 
-            const gameTimer = setTimeout(async () => {
-              // Update game state to finished in the database
-              await supabase
-                .from("games")
-                .update({ state: "finished" })
-                .eq("id", param.gameId);
+            // const gameTimer = setTimeout(async () => {
+            //   // Update game state to finished in the database
+            //   await supabase
+            //     .from("games")
+            //     .update({ state: "finished" })
+            //     .eq("id", param.gameId);
 
-              // Notify players that the game has ended
-              await channel.send({
-                type: "broadcast",
-                event: "game-end",
-                payload: {},
-              });
-              clearInterval(intervalId);
-              channel.unsubscribe();
+            //   // Notify players that the game has ended
+            //   await channel.send({
+            //     type: "broadcast",
+            //     event: "game-end",
+            //     payload: {},
+            //   });
+            //   // clearInterval(intervalId);
+            //   channel.unsubscribe();
 
-              router.push(`/game-result/${param.gameId}`);
-            }, 120000);
+            //   router.push(`/game-result/${param.gameId}`);
+            // }, 120000);
 
             return () => {
-              clearInterval(intervalId);
-              clearTimeout(gameTimer);
+              // clearInterval(intervalId);
+              // clearTimeout(gameTimer);
               // channel.unsubscribe();
             };
           }
@@ -233,7 +233,7 @@ export default function WhackAMole() {
       <div
         id={MOLE_HAMMER_AREA}
         style={{ backgroundColor: "#000" }}
-        className="w-full h-full flex-1"
+        className="w-full h-full"
       >
         <div className="border-2 rounded-md h-full p-4 whack-a-mole-board relative">
           {holesData.map((hole, index) => {

@@ -101,11 +101,11 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
   }
 
   return (
-    <>
+    <div className='w-full md:w-[20%] h-full flex flex-col'>
       <div
-        className={`w-full md:w-[20%] pt-0 md:pt-4 rounded-md ${
+        className={`w-full grow pt-0 md:pt-4 rounded-md overflow-y-auto ${
           isOver ? 'h-full' : 'h-100'
-        } md:h-full p-2 md:p-4 flex flex-col  bg-black bg-opacity-10`}
+        } md:h-full p-2 md:p-4 flex flex-col  bg-black bg-opacity-10 `}
       >
         {!isOver ? (
           <div className='flex justify-between items-center mb-0 md:mb-4'>
@@ -122,8 +122,8 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
           return (
             <div
               key={index}
-              className={`items-center justify-between gap-2 ${
-                isOver ? 'flex py-2' : 'hidden'
+              className={`items-center justify-between gap-2 py-2 ${
+                isOver ? 'flex ' : 'hidden'
               } md:flex`}
             >
               <div className='flex items-center gap-2 overflow-hidden'>
@@ -135,9 +135,12 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
                     {getFirstTwoLetters(el.display_name)}
                   </span>
                 </div>
-                <div className='flex flex-col gap-4'>
-                  <span className='text-ellipsis whitespace-nowrap overflow-hidden'>
+                <div className='flex gap-1 grow items-center'>
+                  <span className='text-ellipsis max-w-24 whitespace-nowrap overflow-hidden'>
                     {el.display_name}
+                  </span>
+                  <span className='font-semibold'>
+                    {el.id === playerId ? '(You)' : ''}
                   </span>
                 </div>
               </div>
@@ -157,7 +160,7 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
           Return home
         </button>
       ) : null}
-    </>
+    </div>
   );
 };
 

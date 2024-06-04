@@ -18,6 +18,10 @@ const JoinForm: FC<Props> = ({ gameId }) => {
   const [displayName, setDisplayName] = useState('');
 
   const joinGame = async () => {
+    if (!displayName) {
+      toast.error('Please enter name');
+      return;
+    }
     setIsLoading(true);
     const response = await fetch('/api/joinGame', {
       method: 'POST',

@@ -120,7 +120,10 @@ const UserList: FC<PageProps> = ({ gameId }) => {
                   {getFirstTwoLetters(player.display_name)}
                 </span>
               </div>
-              {player.display_name} {player.id === playerId ? '(You)' : ''}
+              <span className='text-ellipsis max-w-40 overflow-hidden text-nowrap'>
+                {player.display_name}
+              </span>{' '}
+              {player.id === playerId ? '(You)' : ''}
             </li>
           ))}
         </ul>

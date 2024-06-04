@@ -1,6 +1,6 @@
-import { User } from "@supabase/supabase-js";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { User } from '@supabase/supabase-js';
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 export interface UserState {
   user: User | undefined | null;
   clearUser: () => void;
@@ -22,7 +22,7 @@ interface Store {
 }
 
 const initState: State = {
-  playerId: null,
+  playerId: localStorage.getItem('playerId') || null,
 };
 
 export const usePlayerId = create(

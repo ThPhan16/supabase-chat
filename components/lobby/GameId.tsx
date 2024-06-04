@@ -19,7 +19,9 @@ export const GameId = (props: { gameId: string }) => {
       <h1 className='text-4xl w-full text-center mt-8'>Lobby</h1>
       <p className='text-md font-bold flex items-center gap-2'>
         <span className='font-normal'>GameId:</span>
-        <span className='font-normal'>{gameId}</span>
+        <span className='font-normal whitespace-nowrap max-w-32 text-ellipsis overflow-hidden'>
+          {gameId}
+        </span>
         <div className='relative'>
           {gameId ? (
             <Image
@@ -29,7 +31,7 @@ export const GameId = (props: { gameId: string }) => {
               height={20}
               onClick={handleCopy}
               style={{
-                marginLeft: 12,
+                marginLeft: 2,
                 cursor: 'pointer',
               }}
               onMouseEnter={() => {
@@ -51,7 +53,7 @@ export const GameId = (props: { gameId: string }) => {
         <p className='w-full text-center text-2xl p-4 pb-2'>Rules</p>
         <li>- Each game last 60 seconds</li>
         <li>- For every hit, you have 1 point</li>
-        <li>- If you miss 4 times, 1 point will be taken</li>
+        <li>- If you miss 3 times, 1 point will be taken</li>
       </ul>
     </div>
   );

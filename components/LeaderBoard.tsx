@@ -100,16 +100,19 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
     );
   }
 
+  console.log('data', data);
+  console.log('playerId', playerId);
+
   return (
     <div
       className={`w-full  ${
-        isOver ? 'h-full w-[40%]' : 'h-8 md:w-[20%] md:h-full'
+        isOver ? 'h-full md:w-[40%]' : 'h-8 md:w-[20%] md:h-full'
       } flex flex-col`}
     >
       <div
         className={`w-full grow pt-2 md:pt-4 rounded-md overflow-y-auto ${
           isOver ? 'h-full' : 'h-100'
-        } md:h-full p-4 flex flex-col  bg-black bg-opacity-10 `}
+        } md:h-full p-4 flex flex-col bg-black bg-opacity-10 `}
       >
         {!isOver ? (
           <div className='flex justify-between items-center mb-0 md:mb-4'>

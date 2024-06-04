@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import LeaderBoard from './LeaderBoard';
 
 const MOLE_HAMMER_AREA = 'mole-hammer-area';
-const UN_WHACKED_MOLE_POINT = 4;
+const UN_WHACKED_MOLE_POINT = 3;
 
 export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
@@ -19,7 +19,7 @@ export default function WhackAMole() {
     '';
   const whackedPoint = useRef(0);
   const unWhackedPoint = useRef(0);
-  const holesData = Array(42).fill(false);
+  const holesData = Array(24).fill(false);
 
   const holeRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -68,7 +68,6 @@ export default function WhackAMole() {
   }, []);
 
   /// get score
-
   useEffect(() => {
     if (!playerId) {
       return;
@@ -155,6 +154,7 @@ export default function WhackAMole() {
               channel.unsubscribe();
 
               router.push(`/game-result/${param.gameId}`);
+              localStorage.clear();
             }, 63000);
 
             return () => {
@@ -226,12 +226,15 @@ export default function WhackAMole() {
       return;
     }
 
-    toast.warning(`You didn't strike the mole ${UN_WHACKED_MOLE_POINT} times.`);
+    toast.warning(
+      `You didn't strike the mole ${UN_WHACKED_MOLE_POINT} times.`,
+      { duration: 500, position: 'top-center' }
+    );
 
     await supabase
       .from('players')
       .update({
-        score: whackedPoint.current > 0 ? --whackedPoint.current : 0,
+        score: --whackedPoint.current,
       })
       .eq('id', playerId);
 

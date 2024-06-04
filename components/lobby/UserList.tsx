@@ -133,7 +133,7 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
       {isHost ? (
         <button
-          className='p-4  bg-white rounded text-gray-800 font-bold'
+          className='p-4  bg-white rounded text-gray-800 font-bold w-full md:w-fit'
           onClick={startGame}
         >
           Start Game

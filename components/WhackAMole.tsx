@@ -102,7 +102,6 @@ export default function WhackAMole() {
           }
         })
         .on('broadcast', { event: 'game-end' }, () => {
-          console.log('endddd');
           router.push(`/game-result/${param.gameId}`);
           channel.unsubscribe();
         })
@@ -122,7 +121,7 @@ export default function WhackAMole() {
               });
             }, 2000);
 
-            const gameTimer = setTimeout(async () => {
+            const gameTimeout = setTimeout(async () => {
               // Update game state to finished in the database
               await supabase
                 .from('games')
@@ -143,7 +142,7 @@ export default function WhackAMole() {
 
             return () => {
               clearInterval(intervalId);
-              clearTimeout(gameTimer);
+              clearTimeout(gameTimeout);
               // channel.unsubscribe();
             };
           }

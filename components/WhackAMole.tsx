@@ -222,13 +222,13 @@ export default function WhackAMole() {
   };
 
   return (
-    <div className='flex items-center justify-between flex-col md:flex-row gap-6 w-full h-full'>
+    <div className='flex items-center justify-between flex-col md:flex-row gap-2 md:gap-6 w-full h-full'>
       <div
         id={MOLE_HAMMER_AREA}
         style={{ backgroundColor: '#000' }}
         className='w-full h-full'
       >
-        <div className='border-4 rounded-md h-full p-4 whack-a-mole-board'>
+        <div className='border-4 rounded-md h-full grow-1 p-4 whack-a-mole-board'>
           {holesData.map((hole, index) => {
             return (
               <div

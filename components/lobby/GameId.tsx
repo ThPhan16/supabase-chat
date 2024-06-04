@@ -15,9 +15,9 @@ export const GameId = (props: { gameId: string }) => {
   };
 
   return (
-    <div>
-      <h1 className='text-4xl mt-8'>Lobby</h1>
-      <h1 className='text-md font-bold flex items-center gap-2'>
+    <div className='flex flex-col items-center'>
+      <h1 className='text-4xl w-full text-center mt-8'>Lobby</h1>
+      <p className='text-md font-bold flex items-center gap-2'>
         <span className='font-normal'>GameId:</span>
         <span className='font-normal'>{gameId}</span>
         <div className='relative'>
@@ -46,7 +46,13 @@ export const GameId = (props: { gameId: string }) => {
             </span>
           ) : null}
         </div>
-      </h1>
+      </p>
+      <ul className='w-full'>
+        <p className='w-full text-center text-2xl p-4 pb-2'>Rules</p>
+        <li>- Each game last 120 seconds</li>
+        <li>- For every hit, you have 1 point</li>
+        <li>- If you miss 4 times, 1 point will be taken</li>
+      </ul>
     </div>
   );
 };

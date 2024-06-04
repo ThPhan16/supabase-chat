@@ -1,10 +1,10 @@
 // pages/lobby/[gameId].tsx
-"use client";
-import { FC, useEffect, useState } from "react";
-import { supabaseBrowserClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import { usePlayerId } from "@/lib/store/user";
-import { getFirstTwoLetters, stringToColor } from "@/lib/utils";
+'use client';
+import { FC, useEffect, useState } from 'react';
+import { supabaseBrowserClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
+import { usePlayerId } from '@/lib/store/user';
+import { getFirstTwoLetters, stringToColor } from '@/lib/utils';
 
 interface PageProps {
   gameId?: string;
@@ -13,7 +13,7 @@ interface PageProps {
 const UserList: FC<PageProps> = ({ gameId }) => {
   const supabase = supabaseBrowserClient();
   const playerId =
-    usePlayerId((s) => s.state.playerId) || localStorage.getItem("playerId");
+    usePlayerId((s) => s.state.playerId) || localStorage.getItem('playerId');
   const [players, setPlayers] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const isHost = players.some(
@@ -23,10 +23,10 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
   const startGame = async () => {
     try {
-      const response = await fetch("/api/startGame", {
-        method: "POST",
+      const response = await fetch('/api/startGame', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ gameId }),
       });
@@ -38,7 +38,7 @@ const UserList: FC<PageProps> = ({ gameId }) => {
         // Handle error (e.g., show a notification)
       }
     } catch (err) {
-      console.error("An error occurred while starting the game:", err);
+      console.error('An error occurred while starting the game:', err);
     }
   };
 
@@ -47,9 +47,9 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
     const fetchPlayers = async () => {
       const { data, error } = await supabase
-        .from("players")
-        .select("*")
-        .eq("game_id", gameId);
+        .from('players')
+        .select('*')
+        .eq('game_id', gameId);
 
       if (error) {
         setError(error.message);
@@ -63,13 +63,13 @@ const UserList: FC<PageProps> = ({ gameId }) => {
     // Optionally, set up real-time updates
 
     const channels = supabase
-      .channel("custom-insert-channel")
+      .channel('custom-insert-channel')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "INSERT",
-          schema: "public",
-          table: "players",
+          event: 'INSERT',
+          schema: 'public',
+          table: 'players',
           filter: `game_id=eq.${gameId}`,
         },
         (payload) => {
@@ -79,17 +79,17 @@ const UserList: FC<PageProps> = ({ gameId }) => {
       .subscribe();
 
     const gameChannel = supabase
-      .channel("custom-filter-channel")
+      .channel('custom-filter-channel')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "UPDATE",
-          schema: "public",
-          table: "games",
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'games',
           filter: `id=eq.${gameId}`,
         },
         (payload) => {
-          if (payload.new.state === "in_progress") {
+          if (payload.new.state === 'in_progress') {
             router.push(`/game/${gameId}`);
           }
         }
@@ -108,26 +108,29 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
   return (
     <>
-      <div className="grow m-10 mt-2 w-1/2 p-10 bg-opacity-10 rounded-lg bg-black">
-        <ul className="flex flex-wrap gap-3">
+      <div className='flex flex-col grow mb-1 mt-2 w-full lg:w-1/2 p-5 bg-opacity-10 rounded-lg bg-black '>
+        <ul className='flex flex-wrap gap-4 items-start grow'>
           {players.map((player) => (
-            <li key={player.id} className="flex gap-3 items-center font-bold">
+            <li key={player.id} className='flex gap-2 items-center font-bold'>
               <div
-                className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center`}
+                className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center border-white border-2`}
                 style={{ backgroundColor: stringToColor(player.display_name) }}
               >
-                <span className="font-bold uppercase text-sm">
+                <span className='font-bold uppercase text-sm'>
                   {getFirstTwoLetters(player.display_name)}
                 </span>
               </div>
-              {player.display_name} {player.id === playerId ? "(You)" : ""}
+              {player.display_name} {player.id === playerId ? '(You)' : ''}
             </li>
           ))}
         </ul>
+        {/* <div className='flex w-[1/2 - 10px]'> */}
+        <p className=' w-full  text-left'>{players.length} players</p>
       </div>
+
       {isHost ? (
         <button
-          className="p-4 mb-8 bg-white rounded text-gray-800 font-bold"
+          className='p-4  bg-white rounded text-gray-800 font-bold'
           onClick={startGame}
         >
           Start Game

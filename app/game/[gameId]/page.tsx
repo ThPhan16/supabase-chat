@@ -15,7 +15,7 @@ const page = async ({ params }: PageProps) => {
   const { gameId } = params;
 
   return (
-    <div className='h-screen w-full p-10'>
+    <div className='h-screen w-full p-1 md:p-10'>
       <WhackAMole />
     </div>
   );

@@ -49,8 +49,6 @@ const JoinForm: FC<Props> = ({ gameId }) => {
 
   return (
     <div className='flex flex-col justify-center items-center bg-white rounded-lg p-6'>
-      <h2 className='text-blue-800 font-medium text-lg p-2'>Join game</h2>
-
       <input
         type='text'
         className='border border-gray-300 rounded bg-white p-2 w-full mb-4 text-gray-500 focus:border-gray-500'

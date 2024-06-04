@@ -29,20 +29,25 @@ export default function WhackAMole() {
 
   const [countdown, setCountdown] = useState(3); // Initial countdown value
 
+  const audio = new Audio('../smash.mp3');
+  const countdownSound = new Audio('../tick.mp3');
+  const missSound = new Audio('../cheems.mp3');
+  const lostPointSound = new Audio('../duck.mp3');
+
   useEffect(() => {
     const intervalId = setTimeout(() => {
-      console.log(countdown);
       if (countdown > 0) {
         setCountdown((prevCountdown) => prevCountdown - 1);
       } else {
         setCountdown(0);
         clearInterval(intervalId);
       }
-    }, 800);
+    }, 1000);
     return () => clearTimeout(intervalId);
   }, [countdown]); // Empty dependency array,
 
   useEffect(() => {
+    countdownSound.play();
     const element = document.getElementById(MOLE_HAMMER_AREA);
     if (!element) {
       return;
@@ -187,6 +192,8 @@ export default function WhackAMole() {
       return;
     }
 
+    audio.play();
+
     unWhackedPoint.current = 0;
 
     const channel = supabase.channel(`whack-mole-${param?.gameId}`);
@@ -221,6 +228,8 @@ export default function WhackAMole() {
       return;
     }
 
+    missSound.play();
+
     ++unWhackedPoint.current;
     if (unWhackedPoint.current <= UN_WHACKED_MOLE_POINT) {
       return;
@@ -228,8 +237,10 @@ export default function WhackAMole() {
 
     toast.warning(
       `You didn't strike the mole ${UN_WHACKED_MOLE_POINT} times.`,
-      { duration: 500, position: 'top-center' }
+      { duration: 1000, position: 'top-center' }
     );
+
+    lostPointSound.play();
 
     await supabase
       .from('players')

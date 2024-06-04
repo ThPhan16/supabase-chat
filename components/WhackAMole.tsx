@@ -1,19 +1,20 @@
-"use client";
-import { usePlayerId } from "@/lib/store/user";
-import { supabaseBrowserClient } from "@/utils/supabase/client";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import LeaderBoard from "./LeaderBoard";
+'use client';
+import { usePlayerId } from '@/lib/store/user';
+import { supabaseBrowserClient } from '@/utils/supabase/client';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import LeaderBoard from './LeaderBoard';
 
-const MOLE_HAMMER_AREA = "mole-hammer-area";
+const MOLE_HAMMER_AREA = 'mole-hammer-area';
 const UN_WHACKED_MOLE_POINT = 4;
 
 export default function WhackAMole() {
   const supabase = supabaseBrowserClient();
   const router = useRouter();
 
-  const playerId = usePlayerId((s) => s.state.playerId);
+  const playerId =
+    usePlayerId((s) => s.state.playerId) || localStorage.getItem('playerId');
 
   const whackedPoint = useRef(0);
   const unWhackedPoint = useRef(0);
@@ -32,20 +33,20 @@ export default function WhackAMole() {
     }
 
     const onMouseDown = () => {
-      element.classList.add("hammer-hit");
+      element.classList.add('hammer-hit');
     };
 
     const onMouseUp = () => {
-      element.classList.remove("hammer-hit");
+      element.classList.remove('hammer-hit');
     };
 
-    element.addEventListener("mousedown", onMouseDown);
+    element.addEventListener('mousedown', onMouseDown);
 
-    element.addEventListener("mouseup", onMouseUp);
+    element.addEventListener('mouseup', onMouseUp);
 
     return () => {
-      element.removeEventListener("mousedown", onMouseDown);
-      element.removeEventListener("mouseup", onMouseUp);
+      element.removeEventListener('mousedown', onMouseDown);
+      element.removeEventListener('mouseup', onMouseUp);
     };
   }, []);
 
@@ -57,13 +58,13 @@ export default function WhackAMole() {
 
     const getScore = async () => {
       const { data, error } = await supabase
-        .from("players")
-        .select("score")
-        .eq("id", playerId)
+        .from('players')
+        .select('score')
+        .eq('id', playerId)
         .single();
 
       if (error) {
-        console.log("get score error", error);
+        console.log('get score error', error);
         return;
       }
 
@@ -80,18 +81,18 @@ export default function WhackAMole() {
 
     let userId = playerId;
     if (localStorage && !playerId) {
-      userId = localStorage.getItem("playerId") || "";
+      userId = localStorage.getItem('playerId') || '';
     }
 
     const getHost = async () => {
       const { data, error } = await supabase
-        .from("players")
-        .select("*")
-        .eq("game_id", param.gameId);
+        .from('players')
+        .select('*')
+        .eq('game_id', param.gameId);
 
       if (error) {
-        console.error("Get player error ==>>>>>", error);
-        toast.error("Something went wrong");
+        console.error('Get player error ==>>>>>', error);
+        toast.error('Something went wrong');
         return;
       }
 
@@ -100,55 +101,55 @@ export default function WhackAMole() {
       const channel = supabase.channel(param.gameId);
 
       channel
-        .on("broadcast", { event: "mole-pos" }, (payload) => {
+        .on('broadcast', { event: 'mole-pos' }, (payload) => {
           if (payload.payload.newMoles) {
             setMoles(payload.payload.newMoles);
           }
         })
-        .on("broadcast", { event: "game-end" }, () => {
-          console.log("endddd");
+        .on('broadcast', { event: 'game-end' }, () => {
+          console.log('endddd');
           router.push(`/game-result/${param.gameId}`);
           channel.unsubscribe();
         })
         .subscribe(async (status) => {
-          if (status === "SUBSCRIBED") {
+          if (status === 'SUBSCRIBED') {
             if (hostGame?.id !== userId) {
               return;
             }
 
-            // const intervalId = setInterval(() => {
-            const newMoles = moles.map(() => 0 < 0.3);
-            setMoles(newMoles);
-            channel.send({
-              type: "broadcast",
-              event: "mole-pos",
-              payload: { newMoles },
-            });
-            // }, 2000);
+            const intervalId = setInterval(() => {
+              const newMoles = moles.map(() => Math.random() < 0.3);
+              setMoles(newMoles);
+              channel.send({
+                type: 'broadcast',
+                event: 'mole-pos',
+                payload: { newMoles },
+              });
+            }, 2000);
 
-            // const gameTimer = setTimeout(async () => {
-            //   // Update game state to finished in the database
-            //   await supabase
-            //     .from("games")
-            //     .update({ state: "finished" })
-            //     .eq("id", param.gameId);
+            const gameTimeout = setTimeout(async () => {
+              // Update game state to finished in the database
+              await supabase
+                .from('games')
+                .update({ state: 'finished' })
+                .eq('id', param.gameId);
 
-            //   // Notify players that the game has ended
-            //   await channel.send({
-            //     type: "broadcast",
-            //     event: "game-end",
-            //     payload: {},
-            //   });
-            //   // clearInterval(intervalId);
-            //   channel.unsubscribe();
+              // Notify players that the game has ended
+              await channel.send({
+                type: 'broadcast',
+                event: 'game-end',
+                payload: {},
+              });
+              clearInterval(intervalId);
+              channel.unsubscribe();
 
-            //   router.push(`/game-result/${param.gameId}`);
-            // }, 120000);
+              router.push(`/game-result/${param.gameId}`);
+            }, 120000);
 
             return () => {
-              // clearInterval(intervalId);
-              // clearTimeout(gameTimer);
-              // channel.unsubscribe();
+              clearInterval(intervalId);
+              clearTimeout(gameTimeout);
+              channel.unsubscribe();
             };
           }
         });
@@ -161,8 +162,8 @@ export default function WhackAMole() {
     setMoles((prev) => prev.map((el, idx) => (idx == indx ? false : el)));
 
     const hole = holeRefs.current[indx];
-    const explotion = document.createElement("div");
-    explotion.classList.add("whacked");
+    const explotion = document.createElement('div');
+    explotion.classList.add('whacked');
     hole?.appendChild(explotion);
 
     setTimeout(() => {
@@ -180,17 +181,17 @@ export default function WhackAMole() {
     const channel = supabase.channel(`whack-mole-${param?.gameId}`);
 
     channel
-      .on("broadcast", { event: "hit-mole" }, (payload) => {
+      .on('broadcast', { event: 'hit-mole' }, (payload) => {
         if (payload.payload.index) {
           setExplode(payload.payload.index);
         }
       })
       .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
+        if (status === 'SUBSCRIBED') {
           setExplode(index);
           await channel.send({
-            type: "broadcast",
-            event: "hit-mole",
+            type: 'broadcast',
+            event: 'hit-mole',
             payload: { index },
           });
         }
@@ -198,11 +199,11 @@ export default function WhackAMole() {
 
     const score = ++whackedPoint.current;
     await supabase
-      .from("players")
+      .from('players')
       .update({
         score,
       })
-      .eq("id", playerId);
+      .eq('id', playerId);
   };
 
   const handleUnWhackedAMole = async (index: number) => {
@@ -219,51 +220,40 @@ export default function WhackAMole() {
 
     const score = whackedPoint.current > 0 ? --whackedPoint.current : 0;
     await supabase
-      .from("players")
+      .from('players')
       .update({
         score,
       })
-      .eq("id", playerId);
+      .eq('id', playerId);
 
     unWhackedPoint.current = 0;
   };
 
   return (
-    <div className="flex items-center justify-between flex-col md:flex-row gap-6 w-full h-full">
+    <div className='flex items-center justify-between flex-col md:flex-row gap-6 w-full h-full'>
       <div
         id={MOLE_HAMMER_AREA}
-        style={{ backgroundColor: "#000" }}
-        className="w-full h-full"
+        style={{ backgroundColor: '#000' }}
+        className='w-full h-full'
       >
-        <div className="border-2 rounded-md h-full p-4 whack-a-mole-board relative">
+        <div className='border-2 rounded-md h-full p-4 grow-1 whack-a-mole-board relative'>
           {holesData.map((hole, index) => {
             return (
-              <div className="relative" key={index}>
-                <div
-                  key={index}
-                  ref={(el) => {
-                    holeRefs.current[index] = el;
-                  }}
-                  className={`whack-a-mole-hole`}
-                  onClick={() => {
-                    moles?.[index]
-                      ? handleWhackedAMole(index)
-                      : handleUnWhackedAMole(index);
-                  }}
-                ></div>
-                {moles?.[index] ? <div className="mole"></div> : null}
-                <div
-                  key={index}
-                  ref={(el) => {
-                    holeRefs.current[index] = el;
-                  }}
-                  className={`whack-a-mole-half-hole`}
-                  onClick={() => {
-                    moles?.[index]
-                      ? handleWhackedAMole(index)
-                      : handleUnWhackedAMole(index);
-                  }}
-                ></div>
+              <div
+                className='relative'
+                key={index}
+                ref={(el) => {
+                  holeRefs.current[index] = el;
+                }}
+                onClick={() => {
+                  moles?.[index]
+                    ? handleWhackedAMole(index)
+                    : handleUnWhackedAMole(index);
+                }}
+              >
+                <div className={`whack-a-mole-hole`}></div>
+                {moles?.[index] ? <div className='mole'></div> : null}
+                <div className={`whack-a-mole-half-hole`}></div>
               </div>
             );
           })}

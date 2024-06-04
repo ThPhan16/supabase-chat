@@ -105,7 +105,7 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
       <div
         className={`w-full md:w-[20%] pt-0 md:pt-4 rounded-md ${
           isOver ? 'h-full' : 'h-100'
-        } md:h-full p-2 md:p-4 flex flex-col gap-4 bg-black bg-opacity-10`}
+        } md:h-full p-2 md:p-4 flex flex-col  bg-black bg-opacity-10`}
       >
         {!isOver ? (
           <div className='flex justify-between items-center mb-0 md:mb-4'>
@@ -123,7 +123,7 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
             <div
               key={index}
               className={`items-center justify-between gap-2 ${
-                isOver ? 'flex p-4' : 'hidden'
+                isOver ? 'flex py-2' : 'hidden'
               } md:flex`}
             >
               <div className='flex items-center gap-2 overflow-hidden'>

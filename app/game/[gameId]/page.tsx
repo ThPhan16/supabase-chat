@@ -2,7 +2,7 @@ import WhackAMole from '@/components/WhackAMole';
 
 const page = async () => {
   return (
-    <div className='h-screen w-full p-10'>
+    <div className='h-[100dvh] w-full p-1 md:p-10'>
       <WhackAMole />
     </div>
   );

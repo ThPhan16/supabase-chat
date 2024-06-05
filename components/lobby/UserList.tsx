@@ -108,26 +108,32 @@ const UserList: FC<PageProps> = ({ gameId }) => {
 
   return (
     <>
-      <div className='grow m-10 mt-2 w-1/2 p-10 bg-opacity-10 rounded-lg bg-black'>
-        <ul className='flex flex-wrap gap-3'>
+      <div className='flex flex-col grow mb-1 mt-2 w-full lg:w-1/2 p-5 bg-opacity-10 rounded-lg bg-black '>
+        <ul className='flex flex-wrap gap-4 items-start grow'>
           {players.map((player) => (
-            <li key={player.id} className='flex gap-3 items-center font-bold'>
+            <li key={player.id} className='flex gap-2 items-center font-bold'>
               <div
-                className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center`}
+                className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center border-white border-2`}
                 style={{ backgroundColor: stringToColor(player.display_name) }}
               >
-                <span className='font-bold uppercase'>
+                <span className='font-bold uppercase text-sm'>
                   {getFirstTwoLetters(player.display_name)}
                 </span>
               </div>
-              {player.display_name} {player.id === playerId ? '(You)' : ''}
+              <span className='text-ellipsis max-w-40 overflow-hidden text-nowrap'>
+                {player.display_name}
+              </span>{' '}
+              {player.id === playerId ? '(You)' : ''}
             </li>
           ))}
         </ul>
+        {/* <div className='flex w-[1/2 - 10px]'> */}
+        <p className=' w-full  text-left'>{players.length} players</p>
       </div>
+
       {isHost ? (
         <button
-          className='p-4 mb-8 bg-white rounded text-gray-800 font-bold'
+          className='p-4  bg-white rounded text-gray-800 font-bold w-full md:w-fit'
           onClick={startGame}
         >
           Start Game

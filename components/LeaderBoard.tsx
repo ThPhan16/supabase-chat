@@ -20,26 +20,30 @@ import { FC, useEffect, useState } from "react";
 interface Props {
   gameId?: string;
   isOver?: boolean;
+  time?: number;
 }
 
-const LeaderBoard: FC<Props> = ({ gameId, isOver }) => {
+const LeaderBoard: FC<Props> = ({ gameId, isOver, time = 0 }) => {
   const supabase = supabaseBrowserClient();
   const router = useRouter();
 
-  const playerId = usePlayerId((s) => s.state.playerId);
+  const playerId =
+    usePlayerId((s) => s.state.playerId) ||
+    localStorage.getItem("playerId") ||
+    "";
   const { data, setData, fetchLeaderboardData } = useLeaderboard(gameId);
 
-  const [time, setTime] = useState(120); // 90 seconds = 1 minute 30 seconds
+  // const [time, setTime] = useState(0); // 90 seconds = 1 minute 30 seconds
 
-  useEffect(() => {
-    if (time > 0 && !isOver) {
-      const timerId = setTimeout(() => {
-        setTime(time - 1);
-      }, 1000);
+  // useEffect(() => {
+  //   if (time > 0 && !isOver) {
+  //     const timerId = setTimeout(() => {
+  //       setTime(time - 1);
+  //     }, 1000);
 
-      return () => clearTimeout(timerId);
-    }
-  }, [time]);
+  //     return () => clearTimeout(timerId);
+  //   }
+  // }, [time]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -93,36 +97,57 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver }) => {
 
   if (!data?.length) {
     return (
-      <div className="w-full md:w-[20%]  rounded-md h-full p-4 flex flex-col gap-4">
+      <div className="w-full md:w-[20%] pt-0 md:pt-4 rounded-md h-full p-2 md:p-4 flex flex-col gap-4">
         <span className="font-normal text-lg">Loading...</span>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="w-full md:w-[20%]  rounded-md h-full p-4 flex flex-col gap-4 bg-black bg-opacity-10">
+    <div
+      className={`w-full  ${
+        isOver ? "h-full md:w-[40%]" : "h-8 md:w-[20%] md:h-full"
+      } flex flex-col`}
+    >
+      <div
+        className={`w-full grow pt-2 md:pt-4 rounded-md overflow-y-auto ${
+          isOver ? "h-full" : "h-100"
+        } md:h-full p-4 flex flex-col bg-black bg-opacity-10 `}
+      >
         {!isOver ? (
-          <div className="text-2xl mb-4">{formatTime(time)}</div>
+          <div className="flex justify-between items-center mb-0 md:mb-4">
+            {/* <div className='text-xl md:text-2xl '>{formatTime(time)}</div> */}
+            <div className="">
+              Your score:{" "}
+              <span className="font-semibold">
+                {data.find((el) => el.id === playerId)?.score || 0}
+              </span>
+            </div>
+          </div>
         ) : null}
         {data.map((el, index) => {
           return (
             <div
               key={index}
-              className="flex items-center justify-between gap-2 "
+              className={`items-center justify-between gap-2 py-2 ${
+                isOver ? "flex " : "hidden"
+              } md:flex`}
             >
               <div className="flex items-center gap-2 overflow-hidden">
                 <div
-                  className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center`}
+                  className={`min-w-[2rem] min-h-[2rem] rounded-[50%] opacity-100 flex items-center justify-center border-white border-2`}
                   style={{ backgroundColor: stringToColor(el.display_name) }}
                 >
-                  <span className="font-bold uppercase">
+                  <span className="font-bold uppercase text-sm">
                     {getFirstTwoLetters(el.display_name)}
                   </span>
                 </div>
-                <div className="flex flex-col gap-4">
-                  <span className="text-ellipsis whitespace-nowrap overflow-hidden">
+                <div className="flex gap-1 grow items-center">
+                  <span className="text-ellipsis max-w-24 whitespace-nowrap overflow-hidden">
                     {el.display_name}
+                  </span>
+                  <span className="font-semibold">
+                    {el.id === playerId ? "(You)" : ""}
                   </span>
                 </div>
               </div>
@@ -142,7 +167,7 @@ const LeaderBoard: FC<Props> = ({ gameId, isOver }) => {
           Return home
         </button>
       ) : null}
-    </>
+    </div>
   );
 };
 

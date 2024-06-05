@@ -1,6 +1,6 @@
-import { User } from "@supabase/supabase-js";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { User } from '@supabase/supabase-js';
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 export interface UserState {
   user: User | undefined | null;
   clearUser: () => void;

@@ -1,8 +1,8 @@
-import Main from "./game/Main";
+import Main from './game/Main';
 
 const Page = () => {
   return (
-    <div className="h-screen">
+    <div className='h-[100dvh]'>
       <Main />
     </div>
   );
